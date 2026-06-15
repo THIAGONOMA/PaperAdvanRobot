@@ -1,0 +1,61 @@
+>> 240 janelas de 15 vídeos (split=test) | zero-shot
+
+>> C2 (blendshapes multi-frame) ...
+
+=== C2 (blendshapes, zero-shot) — CCC por vídeo (protocolo OMG) ===
+   Subject_10_Story_3           CCC=-0.054
+   Subject_10_Story_7           CCC=+0.002
+   Subject_1_Story_6            CCC=-0.199
+   Subject_2_Story_3            CCC=+0.338
+   Subject_2_Story_7            CCC=+0.224
+   Subject_3_Story_6            CCC=+0.135
+   Subject_4_Story_3            CCC=+0.343
+   Subject_4_Story_7            CCC=-0.032
+   Subject_5_Story_6            CCC=+0.004
+   Subject_6_Story_3            CCC=+0.320
+   Subject_6_Story_7            CCC=+0.093
+   Subject_7_Story_6            CCC=+0.009
+   Subject_8_Story_3            CCC=+0.011
+   Subject_8_Story_7            CCC=+0.257
+   Subject_9_Story_7            CCC=-0.105
+   >> média entre vídeos: +0.090 ± 0.166 (n_vídeos=15)
+
+>> C3 (visão multimodal) ...
+
+=== C3 (visão) — CCC por vídeo (protocolo OMG) ===
+   Subject_10_Story_3           CCC=+0.201
+   Subject_10_Story_7           CCC=+0.108
+   Subject_1_Story_6            CCC=-0.027
+   Subject_2_Story_3            CCC=+0.387
+   Subject_2_Story_7            CCC=+0.312
+   Subject_3_Story_6            CCC=+0.019
+   Subject_4_Story_3            CCC=+0.254
+   Subject_4_Story_7            CCC=+0.248
+   Subject_5_Story_6            CCC=+0.094
+   Subject_6_Story_3            CCC=+0.345
+   Subject_6_Story_7            CCC=-0.048
+   Subject_7_Story_6            CCC=+0.114
+   Subject_8_Story_3            CCC=+0.081
+   Subject_8_Story_7            CCC=+0.334
+   Subject_9_Story_7            CCC=-0.059
+   >> média entre vídeos: +0.158 ± 0.146 (n_vídeos=15)
+
+>> Baseline (regras multi-frame) ...
+
+=== Baseline (regras) — CCC por vídeo (protocolo OMG) ===
+   Subject_10_Story_3           CCC=+0.116
+   Subject_10_Story_7           CCC=+0.087
+   Subject_1_Story_6            CCC=-0.174
+   Subject_2_Story_3            CCC=+0.328
+   Subject_2_Story_7            CCC=+0.258
+   Subject_3_Story_6            CCC=+0.240
+   Subject_4_Story_3            CCC=+0.490
+   Subject_4_Story_7            CCC=-0.025
+   Subject_5_Story_6            CCC=+0.027
+   Subject_6_Story_3            CCC=+0.565
+   Subject_6_Story_7            CCC=-0.031
+   Subject_7_Story_6            CCC=-0.010
+   Subject_8_Story_3            CCC=+0.026
+   Subject_8_Story_7            CCC=+0.386
+   Subject_9_Story_7            CCC=-0.068
+   >> média entre vídeos: +0.148 ± 0.212 (n_vídeos=15)

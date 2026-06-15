@@ -1,0 +1,26 @@
+>> Coletando treino (FACET) ... alvo=4000
+   treino: 4000 segmentos | classes: {'fear': 42, 'surprise': 61, 'neutral': 486, 'disgust': 502, 'sadness': 815, 'happiness': 1228, 'anger': 866}
+>> Coletando teste ... alvo=100
+   teste: 100 segmentos | distribuição GT: {'fear': 3, 'neutral': 13, 'disgust': 3, 'sadness': 15, 'happiness': 58, 'anger': 8}
+>> Treinando baseline (LogReg sobre FACET) ...
+>> LLM C1 (texto) ...
+>> LLM C2 (FACET) ...
+
+=== RESULTADOS (emoção dominante, MOSEI) ===
+sistema                       acurácia   F1_pond
+baseline(FACET+LogReg)           0.470     0.498
+LLM C1 (texto)                   0.370     0.404
+LLM C2 (FACET)                   0.350     0.364
+
+=== McNemar (LLM vs baseline) ===
+  LLM C1 (texto)      : p=0.1649 | baseline-acerta/LLM-erra=26 | LLM-acerta/baseline-erra=16
+  LLM C2 (FACET)      : p=0.0896 | baseline-acerta/LLM-erra=27 | LLM-acerta/baseline-erra=15
+
+=== Matriz de confusão — baseline (linhas=GT, colunas=pred) ===
+labels: ['happiness', 'sadness', 'anger', 'fear', 'disgust', 'surprise', 'neutral']
+ [ 4  1  1  0  2  0  7]
+ [ 1  1  0  2  2  0  2]
+ [ 0  0  0  1  0  2  0]
+ [ 1  1  0  0  1  0  0]
+ [ 0  0  0  0  0  0  0]
+ [ 1  1  0  1  0  5  5]]

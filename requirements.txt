@@ -1,0 +1,18 @@
+langgraph
+langchain
+langchain-openai
+pydantic>=2
+pyyaml
+mediapipe
+opencv-python
+numpy
+pandas
+pyarrow
+h5py
+scikit-learn
+scipy
+statsmodels
+typer
+tqdm
+# CMU-MultimodalSDK (instalar via git):
+# pip install git+https://github.com/CMU-MultiComp-Lab/CMU-MultimodalSDK.git

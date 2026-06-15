@@ -1,0 +1,42 @@
+>> Treino ... alvo=6000
+   6000 segmentos | prevalência treino: {'happiness': 0.42, 'sadness': 0.31, 'anger': 0.32, 'fear': 0.04, 'disgust': 0.3, 'surprise': 0.12}
+>> Teste ... alvo=400
+   400 segmentos
+
+[Acaso — sorteio por prevalência]  F1 micro≈0.313
+
+[Majority — sempre 'happiness']
+  F1 micro=0.391 | macro=0.108 | ponderado=0.214
+  F1 por emoção: happiness=0.65, sadness=0.00, anger=0.00, fear=0.00, disgust=0.00, surprise=0.00
+
+>> Treinando baseline (LogReg multi-saída sobre FACET) ...
+
+[Baseline FACET + LogReg multi-saída]
+  F1 micro=0.376 | macro=0.333 | ponderado=0.423
+  F1 por emoção: happiness=0.60, sadness=0.37, anger=0.25, fear=0.07, disgust=0.49, surprise=0.21
+
+>> LLM C1 (texto, zero-shot) ...
+
+[LLM C1 texto — zero-shot] [melhor limiar=0.15]
+  F1 micro=0.482 | macro=0.416 | ponderado=0.493
+  F1 por emoção: happiness=0.56, sadness=0.40, anger=0.48, fear=0.16, disgust=0.63, surprise=0.26
+
+>> LLM C1 (texto, few-shot) ...
+>> 5 exemplos few-shot do split de treino
+
+[LLM C1 texto — few-shot k=5] [melhor limiar=0.15]
+  F1 micro=0.499 | macro=0.416 | ponderado=0.498
+  F1 por emoção: happiness=0.57, sadness=0.38, anger=0.52, fear=0.14, disgust=0.63, surprise=0.25
+
+>> LLM C2 (FACET, zero-shot) ...
+
+[LLM C2 FACET — zero-shot] [melhor limiar=0.15]
+  F1 micro=0.111 | macro=0.057 | ponderado=0.096
+  F1 por emoção: happiness=0.25, sadness=0.02, anger=0.02, fear=0.00, disgust=0.02, surprise=0.03
+
+>> LLM C2 (FACET, few-shot) ...
+>> 5 exemplos few-shot do split de treino
+
+[LLM C2 FACET — few-shot k=5] [melhor limiar=0.15]
+  F1 micro=0.289 | macro=0.130 | ponderado=0.213
+  F1 por emoção: happiness=0.54, sadness=0.14, anger=0.00, fear=0.00, disgust=0.00, surprise=0.10

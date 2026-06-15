@@ -1,0 +1,22 @@
+>> 240 janelas de 15 vídeos (split=test) | few-shot k=3
+
+>> C2 (blendshapes multi-frame) ...
+>> 3 exemplos few-shot do split de treino
+
+=== C2 (blendshapes, few-shot k=3) — CCC por vídeo (protocolo OMG) ===
+   Subject_10_Story_3           CCC=+0.202
+   Subject_10_Story_7           CCC=+0.041
+   Subject_1_Story_6            CCC=-0.116
+   Subject_2_Story_3            CCC=+0.299
+   Subject_2_Story_7            CCC=+0.213
+   Subject_3_Story_6            CCC=+0.168
+   Subject_4_Story_3            CCC=+0.345
+   Subject_4_Story_7            CCC=-0.035
+   Subject_5_Story_6            CCC=+0.022
+   Subject_6_Story_3            CCC=+0.450
+   Subject_6_Story_7            CCC=+0.071
+   Subject_7_Story_6            CCC=+0.006
+   Subject_8_Story_3            CCC=-0.002
+   Subject_8_Story_7            CCC=+0.317
+   Subject_9_Story_7            CCC=-0.069
+   >> média entre vídeos: +0.127 ± 0.165 (n_vídeos=15)

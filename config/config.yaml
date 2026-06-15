@@ -1,0 +1,22 @@
+llm:
+  base_url: "http://localhost:8000/v1"
+  model: "cyankiwi/gemma-4-26B-A4B-it-AWQ-4bit"
+  api_key: "not-needed"
+  temperature: 0
+  timeout: 60
+
+run:
+  seeds: [13, 42, 1234]
+  max_attempts: 3
+  max_concurrency: 8
+  conditions: ["C1", "C2", "C3"]
+  results_dir: "results"
+
+data:
+  omg_path: "data/OMG_Empathy2019_full_fY4m3eyn/"
+  mosei_path: "data/cmu-mosei/"
+  window_s: 4
+  top_n_blendshapes: 15
+  omg_listener_side: right
+  n_frames_per_window: 8
+  c3_n_frames: 3
