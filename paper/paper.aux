@@ -1,0 +1,169 @@
+\relax 
+\citation{Picard1997AffectiveComputing}
+\citation{Calvo2010AffectDetection}
+\citation{Breazeal2003SociableRobots}
+\citation{Fong2003SociallyInteractive}
+\citation{Goodrich2007HRISurvey}
+\citation{Spitale2024AffectiveRobotics}
+\citation{Ahn2022SayCan}
+\citation{Zitkovich2023RT2}
+\citation{Kawaharazuka2024RobotLLMSurvey}
+\citation{Vemprala2023ChatGPTRobotics}
+\citation{Magalhaes2024Nadine}
+\citation{Churamani2024EmpathicGrounding}
+\citation{Laban2024LLMsHRI}
+\citation{Survey2024AffectiveLLM}
+\citation{Survey2025MLLMEmotion}
+\citation{Survey2024TextCentric}
+\citation{Zhang2025FluentUnfeeling}
+\@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{1}{}\protected@file@percent }
+\citation{Picard1997AffectiveComputing}
+\citation{Calvo2010AffectDetection}
+\citation{Ekman1992BasicEmotions}
+\citation{Russell1980Circumplex}
+\citation{Li2022DeepFER}
+\citation{Surdulescu2023Blendshapes}
+\citation{Spitale2024AffectiveRobotics}
+\citation{Ahn2022SayCan}
+\citation{Zitkovich2023RT2}
+\citation{Kawaharazuka2024RobotLLMSurvey}
+\citation{Magalhaes2024Nadine}
+\citation{Churamani2024EmpathicGrounding}
+\citation{Laban2024LLMsHRI}
+\citation{Survey2024TextCentric}
+\citation{Survey2025MLLMEmotion}
+\citation{Gemma3Team2025}
+\citation{Gemma4Card2026}
+\citation{Lin2024AWQ}
+\citation{Kwon2023vLLM}
+\citation{LangGraph2024}
+\citation{Barros2019OMGEmpathy}
+\citation{Lin1989CCC}
+\citation{Zadeh2018MOSEI}
+\citation{Ekman1992BasicEmotions}
+\citation{Zadeh2018MultiAttention}
+\citation{FACET}
+\citation{Surdulescu2023Blendshapes}
+\citation{Russell1980Circumplex}
+\@writefile{toc}{\contentsline {section}{\numberline {II}Background}{2}{}\protected@file@percent }
+\newlabel{sec:background}{{II}{2}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {III}Experimental Setup}{2}{}\protected@file@percent }
+\newlabel{sec:method}{{III}{2}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-A}}Datasets}{2}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-B}}Input Conditions}{2}{}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces LLM input conditions by modality and dataset.}}{2}{}\protected@file@percent }
+\newlabel{tab:conditions}{{I}{2}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-C}}Baselines}{2}{}\protected@file@percent }
+\citation{Wilcoxon1945}
+\citation{Cohen1988}
+\citation{Efron1993Bootstrap}
+\citation{Friedman1937}
+\citation{Survey2024AffectiveLLM}
+\citation{Zhang2025FluentUnfeeling}
+\@writefile{toc}{\contentsline {section}{\numberline {IV}Results}{3}{}\protected@file@percent }
+\newlabel{sec:results}{{IV}{3}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-A}}OMG-Empathy: Continuous Valence Regression}{3}{}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces Mean CCC ($\pm $ SD) and 95\% bootstrap CI for OMG-Empathy ($n=15$ videos).}}{3}{}\protected@file@percent }
+\newlabel{tab:omg_ccc}{{II}{3}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Mean CCC per condition with 95\% bootstrap confidence intervals on OMG-Empathy. Native vision (C3) is statistically indistinguishable from the rule-based baseline.}}{3}{}\protected@file@percent }
+\newlabel{fig:omg_conditions}{{1}{3}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {III}{\ignorespaces Pairwise Wilcoxon signed-rank tests between conditions ($n=15$ videos).}}{3}{}\protected@file@percent }
+\newlabel{tab:omg_wilcoxon}{{III}{3}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-B}}CMU-MOSEI: Multi-Label Emotion Classification}{3}{}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {IV}{\ignorespaces Multi-label F1-scores on CMU-MOSEI (400 test segments).}}{3}{}\protected@file@percent }
+\newlabel{tab:mosei_f1}{{IV}{3}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-C}}Per-Emotion Analysis}{3}{}\protected@file@percent }
+\citation{Wilcoxon1945}
+\citation{Cohen1988}
+\citation{Efron1993Bootstrap}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Per-video CCC across the four systems on OMG-Empathy. Performance varies widely across subjects and stories (SD between 0.15 and 0.21), with subjects 2 and 6 (story 3) consistently easiest and subjects 1 and 9 yielding negative CCC for every method.}}{4}{}\protected@file@percent }
+\newlabel{fig:omg_per_video}{{2}{4}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Multi-label F1 (micro, macro, weighted) for all systems on CMU-MOSEI. The text conditions (C1) lead, while the FACET-based condition (C2) falls below random chance in the zero-shot setting.}}{4}{}\protected@file@percent }
+\newlabel{fig:mosei_conditions}{{3}{4}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {V}{\ignorespaces Per-emotion F1: LLM text (C1) vs.\ FACET baseline. $\Delta $ is the best LLM minus the baseline.}}{4}{}\protected@file@percent }
+\newlabel{tab:mosei_emotion}{{V}{4}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Per-emotion F1 comparison on CMU-MOSEI. The largest LLM gains appear on minority emotions (anger, disgust); the baseline retains a small advantage on the majority class (happiness).}}{4}{}\protected@file@percent }
+\newlabel{fig:mosei_emotion}{{4}{4}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-D}}Statistical Significance of the Text--Feature Gap}{4}{}\protected@file@percent }
+\citation{KruskalWallis1952}
+\citation{Dunn1964}
+\citation{Survey2024AffectiveLLM}
+\citation{Survey2025MLLMEmotion}
+\citation{Survey2024TextCentric}
+\citation{Goodrich2007HRISurvey}
+\citation{Breazeal2003SociableRobots}
+\citation{Spitale2024AffectiveRobotics}
+\citation{Magalhaes2024Nadine}
+\citation{Churamani2024EmpathicGrounding}
+\citation{Ahn2022SayCan}
+\citation{Zitkovich2023RT2}
+\citation{Kawaharazuka2024RobotLLMSurvey}
+\citation{KruskalWallis1952}
+\citation{Dunn1964}
+\@writefile{lot}{\contentsline {table}{\numberline {VI}{\ignorespaces Paired statistical tests on MOSEI: C1 (text) vs.\ C2 (FACET), $n=400$.}}{5}{}\protected@file@percent }
+\newlabel{tab:mosei_stats}{{VI}{5}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {V}Discussion}{5}{}\protected@file@percent }
+\newlabel{sec:discussion}{{V}{5}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {VII}{\ignorespaces Comparative advantage by modality and task.}}{5}{}\protected@file@percent }
+\newlabel{tab:summary}{{VII}{5}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {VIII}{\ignorespaces Effect of few-shot learning across conditions.}}{5}{}\protected@file@percent }
+\newlabel{tab:fewshot}{{VIII}{5}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {VI}Computational Cost and Inference Time}{5}{}\protected@file@percent }
+\newlabel{sec:cost}{{VI}{5}{}{}{}}
+\citation{Kwon2023vLLM}
+\citation{Zhang2025FluentUnfeeling}
+\citation{Lin2024AWQ}
+\citation{Li2022DeepFER}
+\@writefile{lot}{\contentsline {table}{\numberline {IX}{\ignorespaces Model architecture and serving configuration.}}{6}{}\protected@file@percent }
+\newlabel{tab:model}{{IX}{6}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {X}{\ignorespaces Estimated token budget and measured latency per condition.}}{6}{}\protected@file@percent }
+\newlabel{tab:latency}{{X}{6}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Per-sample inference latency by condition. The vision condition (C3) is both slower and far more variable than the text and feature conditions, reflecting the cost of encoding three keyframes through the vision encoder.}}{6}{}\protected@file@percent }
+\newlabel{fig:latency}{{5}{6}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {XI}{\ignorespaces Computational requirements: LLM vs.\ traditional baselines.}}{6}{}\protected@file@percent }
+\newlabel{tab:tradeoff}{{XI}{6}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {VII}Limitations}{6}{}\protected@file@percent }
+\newlabel{sec:limitations}{{VII}{6}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {VIII}Conclusion}{6}{}\protected@file@percent }
+\newlabel{sec:conclusion}{{VIII}{6}{}{}{}}
+\bibstyle{IEEEtran}
+\bibdata{references}
+\bibcite{Picard1997AffectiveComputing}{1}
+\bibcite{Calvo2010AffectDetection}{2}
+\bibcite{Breazeal2003SociableRobots}{3}
+\bibcite{Fong2003SociallyInteractive}{4}
+\bibcite{Goodrich2007HRISurvey}{5}
+\bibcite{Spitale2024AffectiveRobotics}{6}
+\bibcite{Ahn2022SayCan}{7}
+\bibcite{Zitkovich2023RT2}{8}
+\bibcite{Kawaharazuka2024RobotLLMSurvey}{9}
+\bibcite{Vemprala2023ChatGPTRobotics}{10}
+\bibcite{Magalhaes2024Nadine}{11}
+\bibcite{Churamani2024EmpathicGrounding}{12}
+\bibcite{Laban2024LLMsHRI}{13}
+\bibcite{Survey2024AffectiveLLM}{14}
+\bibcite{Survey2025MLLMEmotion}{15}
+\bibcite{Survey2024TextCentric}{16}
+\bibcite{Zhang2025FluentUnfeeling}{17}
+\bibcite{Ekman1992BasicEmotions}{18}
+\bibcite{Russell1980Circumplex}{19}
+\bibcite{Li2022DeepFER}{20}
+\bibcite{Surdulescu2023Blendshapes}{21}
+\bibcite{Gemma3Team2025}{22}
+\bibcite{Gemma4Card2026}{23}
+\bibcite{Lin2024AWQ}{24}
+\bibcite{Kwon2023vLLM}{25}
+\bibcite{LangGraph2024}{26}
+\bibcite{Barros2019OMGEmpathy}{27}
+\bibcite{Lin1989CCC}{28}
+\bibcite{Zadeh2018MOSEI}{29}
+\bibcite{Zadeh2018MultiAttention}{30}
+\bibcite{FACET}{31}
+\bibcite{Wilcoxon1945}{32}
+\bibcite{Cohen1988}{33}
+\bibcite{Efron1993Bootstrap}{34}
+\bibcite{Friedman1937}{35}
+\bibcite{KruskalWallis1952}{36}
+\bibcite{Dunn1964}{37}
+\@writefile{toc}{\contentsline {section}{References}{7}{}\protected@file@percent }
+\gdef \@abspage@last{7}

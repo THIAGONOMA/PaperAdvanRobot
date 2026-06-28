@@ -1,367 +1,399 @@
-# 4. Configuração Experimental
+# IV. EXPERIMENTAL SETUP
 
-Avaliamos um único LLM multimodal — o **Gemma 4 26B-A4B-it** [1], um modelo
-Mixture-of-Experts (MoE) com 25,2 bilhões de parâmetros totais e 3,8 bilhões
-ativos por token, quantizado para 4 bits via AWQ [2] — contra baselines
-tradicionais específicos de tarefa em dois benchmarks complementares de
-computação afetiva. O modelo é servido por meio do vLLM [3] em uma única GPU
-NVIDIA L4 de 24 GB, expondo uma API compatível com o padrão OpenAI. A
-orquestração da inferência é realizada via LangGraph [4], com parsing manual
-de JSON e validação por Pydantic (temperatura = 0, máximo de 512 tokens).
+This study evaluates a single multimodal LLM — **Gemma 4 26B-A4B-it** [1], a Mixture-of-Experts (MoE) model with 25.2 billion total parameters and 3.8 billion active per token, quantized to 4-bit integers via AWQ [2] — against task-specific traditional baselines on two complementary affective computing benchmarks. The model is served through vLLM [3] on a single NVIDIA L4 24 GB GPU, exposing an OpenAI-compatible API. Inference orchestration is performed via LangGraph [4], with manual JSON parsing and Pydantic validation (temperature = 0, max tokens = 512).
 
-## 4.1 Bases de Dados
+## A. Datasets
 
-O **OMG-Empathy** [5] fornece 80 vídeos de interações diádicas (~7 h), nos
-quais um ouvinte reage a histórias emocionais contadas por um ator. Após cada
-sessão, o ouvinte anotou continuamente seu estado afetivo em uma escala de
-valência (−1 a +1) por meio de joystick. Utilizamos o split oficial de teste
-(histórias 3, 6 e 7; 15 vídeos de 10 sujeitos) e avaliamos por meio do
-Concordance Correlation Coefficient (CCC) [6], calculado por série temporal
-de cada vídeo, seguindo o protocolo do challenge.
+The **OMG-Empathy** dataset [5] provides 80 videos of dyadic interactions (~7 h), in which a listener reacts to emotional stories told by an actor. After each session, the listener continuously annotated their affective state on a valence scale (−1 to +1) via joystick. The official test split (stories 3, 6, and 7; 15 videos from 10 subjects) is used, and evaluation follows the challenge protocol using the Concordance Correlation Coefficient (CCC) [6] computed per video time-series.
 
-O **CMU-MOSEI** [7] contém aproximadamente 23.000 segmentos anotados de vídeos
-do YouTube, com intensidades das seis emoções básicas de Ekman (0–3) [8]. As
-features pré-extraídas são acessadas no formato do CMU Multimodal SDK [9]:
-transcrições do arquivo `TimestampedWords.csd` e features visuais FACET [10]
-de 35 dimensões do arquivo `VisualFacet42.csd`. A avaliação é realizada em
-400 segmentos de teste com F1-score multi-rótulo (micro, macro e ponderado),
-tratando cada emoção como presente quando sua intensidade excede zero.
+The **CMU-MOSEI** dataset [7] contains approximately 23,000 annotated segments from YouTube videos, with intensities for the six basic Ekman emotions (0–3) [8]. Pre-extracted features are accessed through the CMU Multimodal SDK [9]: transcripts from `TimestampedWords.csd` and 35-dimensional FACET visual features [10] from `VisualFacet42.csd`. Evaluation is conducted on 400 test segments using multi-label F1-score (micro, macro, and weighted), treating each emotion as present when its intensity exceeds zero.
 
-## 4.2 Condições Experimentais
+## B. Experimental Conditions
 
-Definimos três condições de entrada para o LLM, variando a modalidade do sinal
-apresentado no prompt, conforme apresentado na **Tabela I**.
+Three input conditions are defined for the LLM, varying the signal modality presented in the prompt, as summarized in Table I.
 
-**Tabela I.** Condições de entrada do LLM por modalidade e dataset.
+TABLE I: LLM input conditions by modality and dataset.
 
-| Condição | Entrada para o LLM | Disponível em |
+| Condition | LLM Input | Available in |
 |---|---|---|
-| **C1 — Texto** | Transcrição verbatim do falante | Apenas MOSEI |
-| **C2 — Features faciais como texto** | Estatísticas de blendshapes (OMG) ou coeficientes FACET (MOSEI) serializados | Ambos |
-| **C3 — Visão nativa** | 3 keyframes JPEG por janela de 4 s, codificados em base64 | Apenas OMG |
+| **C1 — Text** | Verbatim speaker transcript | MOSEI only |
+| **C2 — Facial features as text** | Blendshape statistics (OMG) or serialized FACET coefficients (MOSEI) | Both |
+| **C3 — Native vision** | 3 JPEG keyframes per 4 s window, base64-encoded | OMG only |
 
-Para o OMG, as features faciais são extraídas com o MediaPipe Face Landmarker
-[11]: 8 frames uniformemente amostrados por janela de 4 s, agregados em média,
-máximo e desvio-padrão dos 15 coeficientes de blendshape mais ativos dentre os
-52 disponíveis. Para o MOSEI, as features FACET são promediadas temporalmente
-dentro do intervalo de cada segmento.
+For OMG, facial features are extracted using MediaPipe Face Landmarker [11]: 8 uniformly sampled frames per 4 s window, aggregated into mean, maximum, and standard deviation of the 15 most active blendshape coefficients out of the 52 available. For MOSEI, FACET features are temporally averaged within each segment interval.
 
-Variantes zero-shot e few-shot (aprendizado in-context) são avaliadas. Os
-exemplos few-shot são extraídos exclusivamente do split de treino para evitar
-vazamento de dados.
+Both zero-shot and few-shot (in-context learning) variants are evaluated. Few-shot examples are drawn exclusively from the training split to prevent data leakage.
 
-## 4.3 Baselines
+## C. Baselines
 
-Para o OMG-Empathy, o baseline consiste no módulo rule-based `face_blendshape`,
-que mapeia os 52 coeficientes de blendshape para valores de valência e arousal
-por meio de regras manuais, fundamentadas no modelo circumplexo do afeto [12].
-Agregação multi-frame (média + pico) é aplicada para corresponder à janela
-temporal do LLM.
+For OMG-Empathy, the baseline consists of the rule-based `face_blendshape` module, which maps the 52 blendshape coefficients to valence and arousal values through manually defined rules grounded in the circumplex model of affect [12]. Multi-frame aggregation (mean + peak) is applied to match the LLM's temporal window.
 
-Para o CMU-MOSEI, o baseline é um classificador de Regressão Logística multi-
-saída, treinado em 6.000 segmentos de features FACET, predizendo seis rótulos
-binários de emoção independentes. Reportamos também um baseline de acaso
-aleatório (amostragem proporcional à prevalência de classe) e um baseline
-majoritário (sempre predizendo *happiness*).
+For CMU-MOSEI, the baseline is a multi-output Logistic Regression classifier trained on 6,000 FACET feature segments, predicting six independent binary emotion labels. A random-chance baseline (class-proportional sampling) and a majority baseline (always predicting *happiness*) are also reported.
 
----
+# V. RESULTS
 
-# 5. Resultados
+## A. OMG-Empathy: Continuous Valence Regression
 
-## 5.1 OMG-Empathy: Regressão Contínua de Valência
+Table II reports the mean CCC across the 15 test videos (4 s windows, per-video time-series evaluation). Bootstrap 95% confidence intervals (10,000 resamples) are provided alongside inter-video standard deviations.
 
-A **Tabela II** reporta o CCC médio entre os 15 vídeos de teste (janelas de 4 s,
-avaliação por série temporal de cada vídeo). Intervalos de confiança bootstrap
-de 95% (10.000 reamostragens) são fornecidos juntamente com os desvios-padrão
-entre vídeos.
+TABLE II: Mean CCC (± SD) and 95% bootstrap CI for OMG-Empathy (n = 15 videos).
 
-**Tabela II.** CCC médio (± DP) e IC 95% bootstrap para o OMG-Empathy (n = 15 vídeos).
-
-| Sistema | CCC médio | IC 95% (bootstrap) | DP |
+| System | Mean CCC | 95% CI (bootstrap) | SD |
 |---|---|---|---|
-| **LLM C3 (visão) — zero-shot** | **+0,158** | [+0,085; +0,230] | 0,146 |
-| Baseline (regras, multi-frame) | +0,148 | [+0,044; +0,259] | 0,212 |
-| LLM C2 (blendshapes) — few-shot k = 3 | +0,127 | [+0,046; +0,213] | 0,165 |
-| LLM C2 (blendshapes) — zero-shot | +0,090 | [+0,007; +0,176] | 0,166 |
+| **LLM C3 (vision) — zero-shot** | **+0.158** | [+0.085, +0.230] | 0.146 |
+| Baseline (rule-based, multi-frame) | +0.148 | [+0.044, +0.259] | 0.212 |
+| LLM C2 (blendshapes) — few-shot k = 3 | +0.127 | [+0.046, +0.213] | 0.165 |
+| LLM C2 (blendshapes) — zero-shot | +0.090 | [+0.007, +0.176] | 0.166 |
 
-A **Figura 1** ilustra o CCC médio por condição com os respectivos intervalos de
-confiança bootstrap de 95%. Observa-se que a visão nativa do LLM (C3) é
-estatisticamente indistinguível do baseline tradicional baseado em regras.
+Fig. 1 illustrates the mean CCC per condition with corresponding 95% bootstrap confidence intervals. The LLM's native vision (C3) is statistically indistinguishable from the traditional rule-based baseline.
 
-![Figura 1](figures/omg_ccc_conditions.png)
+![Fig. 1](figures/omg_ccc_conditions.png)
 
-*Figura 1. CCC médio por condição com IC 95% bootstrap. A visão nativa do LLM (C3) é estatisticamente indistinguível do baseline tradicional baseado em regras.*
+*Fig. 1. Mean CCC per condition with 95% bootstrap CI. The LLM's native vision (C3) is statistically indistinguishable from the traditional rule-based baseline.*
 
-O LLM com visão nativa (C3) alcança um CCC de +0,158, marginalmente acima do
-baseline baseado em regras (+0,148). Entretanto, o teste de Wilcoxon signed-rank
-não revela diferença significativa (W = 45,0; p = 0,421; d de Cohen = +0,07),
-confirmando um empate estatístico. Os ICs bootstrap de 95% se sobrepõem
-substancialmente ([+0,085; +0,230] vs. [+0,044; +0,259]).
+The LLM with native vision (C3) achieves a CCC of +0.158, marginally above the rule-based baseline (+0.148). However, the Wilcoxon signed-rank test reveals no significant difference (W = 45.0, p = 0.421, Cohen's d = +0.07), confirming a statistical tie. The 95% bootstrap CIs overlap substantially ([+0.085, +0.230] vs. [+0.044, +0.259]).
 
-A única diferença estatisticamente significativa é entre o **baseline e o C2
-zero-shot** (W = 17,0; **p = 0,013**; d = +0,64, efeito médio), indicando que
-o LLM apresenta desempenho significativamente inferior ao receber features
-numéricas de blendshape serializadas sem exemplos in-context. A **Tabela III**
-detalha todos os testes pareados.
+The only statistically significant difference is between the **baseline and C2 zero-shot** (W = 17.0, **p = 0.013**, d = +0.64, medium effect), indicating that the LLM performs significantly worse when receiving serialized numerical blendshape features without in-context examples. Table III details all pairwise tests.
 
-**Tabela III.** Testes pareados de Wilcoxon signed-rank entre condições (n = 15 vídeos).
+TABLE III: Pairwise Wilcoxon signed-rank tests between conditions (n = 15 videos).
 
-| Comparação | Δ média | W | p | d de Cohen |
+| Comparison | Δ mean | W | p | Cohen's d |
 |---|---|---|---|---|
-| C3 visão vs. Baseline | +0,010 | 45,0 | 0,421 | +0,07 (pequeno) |
-| C3 visão vs. C2 zero-shot | +0,068 | 30,0 | 0,095 | +0,57 (médio) |
-| C2 few-shot vs. C2 zero-shot | +0,038 | 32,0 | 0,121 | +0,51 (médio) |
-| C2 few-shot vs. Baseline | −0,020 | 38,0 | 0,229 | −0,30 (pequeno) |
-| **Baseline vs. C2 zero-shot** | **+0,058** | **17,0** | **0,013** | **+0,64 (médio)** |
+| C3 vision vs. Baseline | +0.010 | 45.0 | 0.421 | +0.07 (small) |
+| C3 vision vs. C2 zero-shot | +0.068 | 30.0 | 0.095 | +0.57 (medium) |
+| C2 few-shot vs. C2 zero-shot | +0.038 | 32.0 | 0.121 | +0.51 (medium) |
+| C2 few-shot vs. Baseline | −0.020 | 38.0 | 0.229 | −0.30 (small) |
+| **Baseline vs. C2 zero-shot** | **+0.058** | **17.0** | **0.013** | **+0.64 (medium)** |
 
-O aprendizado few-shot melhora o C2 de +0,090 para +0,127 (d = +0,51, efeito
-médio), mas essa melhoria não atinge significância em α = 0,05 (p = 0,121).
+Few-shot learning improves C2 from +0.090 to +0.127 (d = +0.51, medium effect), but this improvement does not reach significance at α = 0.05 (p = 0.121).
 
-A **Figura 2** apresenta o CCC discriminado por vídeo individual para os quatro
-sistemas avaliados.
+### Friedman Omnibus Test
 
-![Figura 2](figures/omg_ccc_per_video.png)
+To assess whether a global difference exists among the four conditions (non-parametric repeated measures), the Friedman test was applied to per-video CCCs (4 conditions × 15 blocks). The result is **significant** (χ² = 10.04, p = 0.018, Kendall's W = 0.223), indicating that at least one condition differs from the others. Table IV reports the Friedman mean ranks and post-hoc pairwise tests with Holm–Bonferroni correction.
 
-*Figura 2. CCC por vídeo individual nos quatro sistemas avaliados. O desempenho varia substancialmente entre sujeitos e histórias, com alta variância inter-vídeo (DP 0,15–0,21).*
+TABLE IV: Friedman test and post-hoc pairwise comparisons with Holm correction (n = 15 videos). Lower mean rank indicates better performance.
 
-Conforme ilustrado na Figura 2, a variabilidade inter-vídeo é substancial.
-Vídeos dos sujeitos 2 e 6 com a história 3 consistentemente apresentam os
-maiores CCCs em todos os sistemas (CCC > +0,30), enquanto os sujeitos 1
-(história 6) e 9 (história 7) exibem valores negativos de CCC, sugerindo que
-essas interações contêm variação afetiva mínima rastreável ou apresentam
-desafios particulares para todos os métodos.
+| Condition | Mean Rank |
+|---|---|
+| C3 vision (zero-shot) | **1.87** |
+| Baseline (rules) | 2.13 |
+| C2 few-shot (k = 3) | 2.80 |
+| C2 zero-shot | 3.20 |
 
-## 5.2 CMU-MOSEI: Classificação Multi-Rótulo de Emoção
-
-A **Tabela IV** compara todos os sistemas em 400 segmentos de teste. O limiar
-de saída do LLM foi selecionado via busca em grade sobre [0,01; 0,50] nos
-scores inteiros de Ekman (melhor limiar = 0,15 para todas as condições do LLM).
-
-**Tabela IV.** F1-scores multi-rótulo no CMU-MOSEI (400 segmentos de teste).
-
-| Sistema | F1 micro | F1 macro | F1 ponderado |
+| Post-hoc comparison | p (raw) | p (Holm-adjusted) | Significant? |
 |---|---|---|---|
-| Acaso aleatório | 0,313 | — | — |
-| Majoritário (*happiness*) | 0,391 | 0,108 | 0,214 |
-| Baseline (LogReg sobre FACET) | 0,376 | 0,333 | 0,423 |
-| **LLM C1 (texto) — zero-shot** | 0,482 | **0,416** | 0,493 |
-| **LLM C1 (texto) — few-shot k = 5** | **0,499** | **0,416** | 0,498 |
-| LLM C2 (FACET) — zero-shot | 0,111 | 0,057 | 0,096 |
-| LLM C2 (FACET) — few-shot k = 5 | 0,289 | 0,130 | 0,213 |
+| C2 zero-shot vs. Baseline | 0.013 | 0.075 | ns |
+| C2 zero-shot vs. C3 vision | 0.095 | 0.473 | ns |
+| C2 zero-shot vs. C2 few-shot | 0.121 | 0.482 | ns |
+| C2 few-shot vs. Baseline | 0.229 | 0.688 | ns |
+| C3 vision vs. Baseline | 0.421 | 0.842 | ns |
+| C2 few-shot vs. C3 vision | 0.525 | 0.525 | ns |
 
-Os resultados da Tabela IV são visualizados na **Figura 3**, que ilustra as
-três variantes de F1 para cada sistema.
+Although the Friedman omnibus test rejects the null hypothesis (p = 0.018), no individual post-hoc comparison survives the Holm correction for multiple comparisons. The closest pair is C2 zero-shot vs. Baseline (adjusted p = 0.075). The mean rank ordering consistently favors native vision (C3, rank 1.87), followed by the baseline (2.13), corroborating the numerical advantage observed in Table II.
 
-![Figura 3](figures/mosei_f1_conditions.png)
+Fig. 2 presents the per-video CCC breakdown across all four systems.
 
-*Figura 3. F1-scores multi-rótulo (micro, macro, ponderado) para todos os sistemas. As condições baseadas em texto (C1) do LLM dominam, enquanto o LLM baseado em FACET (C2) apresenta desempenho inferior ao baseline aleatório em zero-shot.*
+![Fig. 2](figures/omg_ccc_per_video.png)
 
-O LLM baseado em texto (C1) alcança um macro-F1 de 0,416, superando o baseline
-treinado de LogReg em **25%** (0,333), conforme detalhado na Tabela IV e
-ilustrado na Figura 3. Essa vantagem é robusta à escolha da métrica: o LLM
-também lidera em micro-F1 (0,499 vs. 0,376) e F1-ponderado (0,498 vs. 0,423).
-A melhoria é consistente entre as configurações zero-shot e few-shot, com o
-few-shot proporcionando apenas ganhos marginais (+0,017 em micro-F1),
-sugerindo que o conhecimento de mundo pré-treinado do LLM já captura semânticas
-emocionais ricas a partir do texto.
+*Fig. 2. Per-video CCC across the four systems. Performance varies substantially across subjects and stories, with high inter-video variance (SD 0.15–0.21).*
 
-Em contraste, o LLM recebendo features numéricas FACET brutas (C2) colapsa
-para um macro-F1 de 0,057 em zero-shot — **abaixo do acaso aleatório** (0,313
-em micro-F1). O aprendizado few-shot recupera parcialmente o desempenho
-(macro-F1 de 0,057 para 0,130, melhoria de 2,3×), mas o sistema permanece
-muito aquém do baseline treinado. Esse padrão espelha os achados do OMG: LLMs
-não são adequados para interpretar vetores de features numéricas densas
-serializados como texto.
+As illustrated in Fig. 2, inter-video variability is substantial. Videos from subjects 2 and 6 with story 3 consistently yield the highest CCCs across all systems (CCC > +0.30), while subjects 1 (story 6) and 9 (story 7) exhibit negative CCC values, suggesting minimal trackable affective variation or particular challenges for all methods in these interactions.
 
-## 5.3 Análise por Emoção
+## B. CMU-MOSEI: Multi-Label Emotion Classification
 
-A **Tabela V** e a **Figura 4** decompõem os F1-scores por categoria de emoção
-de Ekman [8].
+Table V compares all systems on 400 test segments. The LLM output threshold was selected via grid search over [0.01, 0.50] on the integer Ekman scores (best threshold = 0.15 for all LLM conditions).
 
-**Tabela V.** F1 por emoção: LLM texto (C1) vs. baseline FACET. A coluna Δ indica a diferença entre o melhor LLM e o baseline.
+TABLE V: Multi-label F1-scores on CMU-MOSEI (400 test segments).
 
-| Emoção | Prevalência | Baseline | LLM C1 zero-shot | LLM C1 few-shot | Δ melhor |
+| System | F1 micro | F1 macro | F1 weighted |
+|---|---|---|---|
+| Random chance | 0.313 | — | — |
+| Majority (*happiness*) | 0.391 | 0.108 | 0.214 |
+| Baseline (LogReg on FACET) | 0.376 | 0.333 | 0.423 |
+| **LLM C1 (text) — zero-shot** | 0.482 | **0.416** | 0.493 |
+| **LLM C1 (text) — few-shot k = 5** | **0.499** | **0.416** | 0.498 |
+| LLM C2 (FACET) — zero-shot | 0.111 | 0.057 | 0.096 |
+| LLM C2 (FACET) — few-shot k = 5 | 0.289 | 0.130 | 0.213 |
+
+The results from Table V are visualized in Fig. 3, which illustrates the three F1 variants for each system.
+
+![Fig. 3](figures/mosei_f1_conditions.png)
+
+*Fig. 3. Multi-label F1-scores (micro, macro, weighted) for all systems. Text-based LLM conditions (C1) dominate, while the FACET-based LLM (C2) underperforms the random baseline in zero-shot.*
+
+The text-based LLM (C1) achieves a macro-F1 of 0.416, outperforming the trained LogReg baseline by **25%** (0.333), as detailed in Table V and illustrated in Fig. 3. This advantage is robust across metric variants: the LLM also leads in micro-F1 (0.499 vs. 0.376) and weighted-F1 (0.498 vs. 0.423). The improvement is consistent across zero-shot and few-shot configurations, with few-shot providing only marginal gains (+0.017 in micro-F1), suggesting that the LLM's pre-trained world knowledge already captures rich emotional semantics from text.
+
+In contrast, the LLM receiving raw numerical FACET features (C2) collapses to a macro-F1 of 0.057 in zero-shot — **below random chance** (0.313 in micro-F1). Few-shot learning partially recovers performance (macro-F1 from 0.057 to 0.130, a 2.3× improvement), but the system remains far below the trained baseline. This pattern mirrors the OMG findings: LLMs are not suited to interpret dense numerical feature vectors serialized as text.
+
+## C. Per-Emotion Analysis
+
+Table VI and Fig. 4 decompose the F1-scores by Ekman emotion category [8].
+
+TABLE VI: Per-emotion F1: LLM text (C1) vs. FACET baseline. Δ indicates the difference between the best LLM and the baseline.
+
+| Emotion | Prevalence | Baseline | LLM C1 zero-shot | LLM C1 few-shot | Δ best |
 |---|---|---|---|---|---|
-| happiness | 0,42 | **0,60** | 0,56 | 0,57 | −0,03 |
-| sadness | 0,31 | 0,37 | **0,40** | 0,38 | +0,03 |
-| anger | 0,32 | 0,25 | 0,48 | **0,52** | **+0,27** |
-| fear | 0,04 | 0,07 | **0,16** | 0,14 | +0,09 |
-| disgust | 0,30 | 0,49 | **0,63** | **0,63** | **+0,14** |
-| surprise | 0,12 | 0,21 | **0,26** | 0,25 | +0,05 |
+| happiness | 0.42 | **0.60** | 0.56 | 0.57 | −0.03 |
+| sadness | 0.31 | 0.37 | **0.40** | 0.38 | +0.03 |
+| anger | 0.32 | 0.25 | 0.48 | **0.52** | **+0.27** |
+| fear | 0.04 | 0.07 | **0.16** | 0.14 | +0.09 |
+| disgust | 0.30 | 0.49 | **0.63** | **0.63** | **+0.14** |
+| surprise | 0.12 | 0.21 | **0.26** | 0.25 | +0.05 |
 
-![Figura 4](figures/mosei_f1_per_emotion.png)
+![Fig. 4](figures/mosei_f1_per_emotion.png)
 
-*Figura 4. Comparação de F1 por emoção. O LLM apresenta os maiores ganhos nas emoções minoritárias (anger +0,27; disgust +0,14), enquanto o baseline retém uma leve vantagem na classe majoritária (happiness).*
+*Fig. 4. Per-emotion F1 comparison. The LLM achieves the largest gains on minority emotions (anger +0.27, disgust +0.14), while the baseline retains a slight advantage on the majority class (happiness).*
 
-Conforme ilustrado na Figura 4 e detalhado na Tabela V, o LLM supera o baseline
-em **cinco das seis** categorias de Ekman. Os maiores ganhos ocorrem em **anger**
-(+0,27) e **disgust** (+0,14), precisamente as emoções onde a LogReg baseada
-em FACET mais sofre devido ao desbalanceamento de classes e ao poder
-discriminativo limitado das 35 action units faciais para essas categorias. O
-baseline retém vantagem marginal apenas em **happiness** (0,60 vs. 0,57), a
-classe dominante onde um classificador baseado em frequência naturalmente se
-destaca.
+As shown in Fig. 4 and detailed in Table VI, the LLM outperforms the baseline in **five of six** Ekman categories. The largest gains occur in **anger** (+0.27) and **disgust** (+0.14) — precisely the emotions where the FACET-based LogReg suffers most due to class imbalance and the limited discriminative power of the 35 facial action units for these categories. Bootstrap 95% confidence intervals (10,000 resamples) confirm that the gains on **anger** ([+0.18, +0.35]) and **disgust** ([+0.06, +0.22]) are statistically reliable, as both intervals exclude zero. Conversely, the LLM's deficit on happiness ([−0.10, +0.03]) and its advantages on sadness, fear, and surprise all have intervals that include zero. The baseline retains a marginal advantage only in **happiness** (0.60 vs. 0.57), the dominant class where a frequency-based classifier naturally excels.
 
-Esse padrão é consistente com achados recentes de que LLMs possuem fortes
-priors linguísticos para reconhecimento de emoção [13], particularmente para
-categorias minoritárias e nuançadas onde classificadores supervisionados
-treinados em conjuntos de features pequenos tendem a predições majoritárias.
-Entretanto, conforme observado por Zhang et al. [15], LLMs podem gerar rótulos
-de emoção consistentes com a teoria psicológica sem capturar plenamente
-sutilezas contextuais — uma limitação que nossa métrica macro-F1, operando no
-nível de categorias de Ekman, não penaliza.
+This pattern is consistent with recent findings that LLMs possess strong linguistic priors for emotion recognition [13], particularly for minority and nuanced categories where supervised classifiers trained on small feature sets default to majority predictions. However, as noted by Zhang et al. [15], LLMs may generate emotion labels consistent with psychological theory without fully capturing contextual subtleties — a limitation that our macro-F1 metric, operating at the Ekman category level, does not penalize.
 
----
+## D. Statistical Significance — MOSEI (C1 Text vs. C2 FACET)
 
-# 6. Discussão
+To quantify the difference between the two LLM input representations, per-sample F1-scores (paired, n = 400) were computed and non-parametric tests were applied. Table VII summarizes the results.
 
-## 6.1 Vantagem Dependente de Modalidade
+TABLE VII: Paired statistical tests — MOSEI C1 (text) vs. C2 (FACET), n = 400 segments.
 
-O achado central deste estudo é que a vantagem do LLM sobre métodos
-tradicionais **não é universal, mas dependente da modalidade**. A Tabela VI
-sintetiza os resultados com a evidência estatística correspondente.
-
-**Tabela VI.** Síntese da vantagem comparativa por modalidade e tarefa.
-
-| Modalidade / tarefa | Vencedor | Evidência estatística |
-|---|---|---|
-| Emoção a partir de **texto** (MOSEI, C1) | **LLM** | macro-F1 0,416 vs. 0,333 (+25%) |
-| Valência contínua — **visão nativa** (OMG, C3) | **Empate** | CCC 0,158 vs. 0,148; p = 0,421; d = 0,07 |
-| Valência contínua — blendshapes (OMG, C2 few-shot) | Empate (leve) | CCC 0,127 vs. 0,148; p = 0,229; d = −0,30 |
-| Valência contínua — blendshapes (OMG, C2 zero-shot) | **Tradicional** | CCC 0,090 vs. 0,148; **p = 0,013**; d = 0,64 |
-| Emoção a partir de **FACET numérico** (MOSEI, C2) | **Tradicional** | macro-F1 0,057–0,130 vs. 0,333 |
-
-**Texto → LLM se destaca.** O LLM utiliza seu massivo corpus de pré-
-treinamento para reconhecer conteúdo emocional em linguagem natural com
-capacidade zero-shot que supera um classificador supervisionado treinado em
-6.000 amostras rotuladas. Isso se alinha com a tendência mais ampla
-identificada em surveys recentes [13][14]: LLMs oferecem compreensão afetiva
-competitiva ou superior quando a entrada é textual, mesmo sem fine-tuning
-específico de tarefa.
-
-**Imagem → competitivo.** O encoder de visão do Gemma 4 (~550 M parâmetros)
-alcança paridade com o motor de regras de blendshapes na regressão contínua de
-valência, conforme demonstrado na Tabela II e Tabela III. Isso é notável dado
-que a condição de visão recebe frames JPEG brutos sem engenharia de features
-faciais, enquanto o baseline opera com regras cuidadosamente projetadas mapeando
-52 coeficientes de blendshape para o espaço de valência-arousal [12].
-
-**Features numéricas → LLM falha.** Quando features faciais são serializadas
-como texto (C2), o LLM apresenta desempenho significativamente inferior. Esse
-achado é consistente entre ambos os datasets: CCC de 0,090 vs. 0,148 no OMG
-(Tabela II); macro-F1 de 0,057 vs. 0,333 no MOSEI em zero-shot (Tabela IV).
-O modo de falha sugere que LLMs atuais carecem de uma representação interna
-efetiva para interpretar vetores densos de ponto flutuante embutidos em prompts
-de linguagem natural. Exemplos few-shot mitigam parcialmente essa lacuna
-(CCC +0,037; macro-F1 ×2,3), mas não a eliminam.
-
-## 6.2 Implicações para Robótica e HRI
-
-Em cenários de interação humano-robô (HRI), a escolha entre um LLM e um
-pipeline clássico deve ser guiada pela modalidade disponível:
-
-- **Sistemas de fala/diálogo**: LLMs oferecem reconhecimento de emoção
-  superior a partir de transcrições, possibilitando agentes conversacionais
-  mais empáticos.
-- **Sistemas baseados em câmera**: LLMs com encoders de visão equiparam
-  pipelines tradicionais de análise facial, com o benefício adicional de não
-  requerer engenharia de features.
-- **Pipelines de fusão sensorial** que produzem vetores de features numéricos:
-  ML clássico permanece preferível; o overhead e a latência de uma chamada ao
-  LLM não se justificam dado o desempenho degradado em entradas numéricas.
-
-## 6.3 Efeito do Aprendizado In-Context
-
-Exemplos few-shot melhoram o desempenho em todas as condições, mas a magnitude
-da melhoria é inversamente proporcional ao desempenho zero-shot de base,
-conforme sumarizado na **Tabela VII**.
-
-**Tabela VII.** Efeito do aprendizado few-shot por condição.
-
-| Condição | Zero-shot | Few-shot | Melhoria |
+| Test | Statistic | p-value | Interpretation |
 |---|---|---|---|
-| C1 texto (MOSEI, macro-F1) | 0,416 | 0,416 | +0,0% |
-| C2 blendshapes (OMG, CCC) | +0,090 | +0,127 | +41% |
-| C2 FACET (MOSEI, macro-F1) | 0,057 | 0,130 | +128% |
+| Wilcoxon signed-rank (per-sample F1) | W = 7,049 | **p < 0.001** | C1 > C2 significant |
+| McNemar (exact set match) | χ² = 2.94 | p = 0.086 | Not significant |
+| Cohen's d (paired F1) | d = +0.243 | — | Small effect |
+| Bootstrap 95% CI (Δ mean F1) | — | — | [+0.079, +0.185] (excludes zero) |
 
-Quando o LLM já apresenta bom desempenho (texto), os exemplos few-shot
-acrescentam pouco. Quando a entrada é desconhecida (features numéricas), os
-exemplos few-shot fornecem calibração crucial — ainda que insuficiente para
-equiparar-se aos baselines treinados (Tabela VII). Isso sugere que o gargalo
-é representacional (a incapacidade do modelo de processar tokens numéricos
-efetivamente), e não simplesmente uma questão de enquadramento da tarefa.
+The mean per-sample F1 for C1 (text) is 0.460 ± 0.429, compared to 0.329 ± 0.429 for C2 (FACET) — a difference of +0.131 whose 95% bootstrap CI [+0.079, +0.185] excludes zero, confirming statistical robustness. The Wilcoxon test is highly significant (p < 0.001), although the effect size is small (d = 0.24) due to high inter-sample variance.
 
----
+The McNemar test on exact label-set match (both correct = 59; both incorrect = 254; C1-only correct = 52; C2-only correct = 35) does not reach significance (p = 0.086), reflecting that C1's superiority manifests in partial matches (per-sample F1) rather than binary exact-set differences.
 
-# 7. Limitações
+Bootstrap 95% CIs for per-sample mean F1:
+- **C1 (text)**: 0.460 [0.418, 0.502]
+- **C2 (FACET)**: 0.329 [0.287, 0.371]
 
-Diversas ressalvas devem ser consideradas ao interpretar estes resultados:
+The complete separation of confidence intervals reinforces that the text advantage is consistent and not driven by individual outliers.
 
-1. **Tamanho amostral (OMG)**: Avaliamos 15 dos 30 vídeos de teste
-   disponíveis. A variância inter-vídeo é alta (DP 0,15–0,21), e nenhuma
-   comparação pareada entre C3 e o baseline atinge significância (Tabela III).
-   Expandir para o test set completo aumentaria o poder estatístico.
+### Kruskal-Wallis Omnibus (MOSEI, 4 systems)
 
-2. **Seleção de limiar (MOSEI)**: O limiar de emoção do LLM foi selecionado
-   via busca em grade no próprio conjunto de teste (melhor = 0,15), o que pode
-   introduzir viés otimista leve. Um conjunto de validação separado deveria ser
-   utilizado para calibração final.
+To assess whether a global difference exists across multiple systems, per-sample F1 was computed for deterministic baselines (random chance with class-proportional sampling and majority predicting *happiness*) alongside the two LLM conditions. The Kruskal-Wallis test rejects the null hypothesis that all four distributions share the same median (H = 29.18, **p < 10⁻⁵**). Dunn post-hoc comparisons with Bonferroni correction confirm:
 
-3. **Prompt único / seed única**: Os resultados são baseados em um único
-   template de prompt e decodificação determinística (temperatura = 0). Embora
-   a arquitetura MoE introduza variação estocástica mínima, a sensibilidade
-   ao prompt permanece uma preocupação conhecida para avaliação baseada em
-   LLMs [15].
+| Comparison | p (Bonferroni) | Significant? |
+|---|---|---|
+| LLM C1 (text) vs. LLM C2 (FACET) | p < 10⁻⁶ | ** |
+| Majority vs. LLM C1 (text) | p = 0.046 | ** |
+| Random Chance vs. LLM C2 (FACET) | p = 0.001 | ** |
+| Majority vs. LLM C2 (FACET) | p = 0.062 | ns |
+| Random Chance vs. Majority | p = 1.000 | ns |
+| Random Chance vs. LLM C1 (text) | p = 0.741 | ns |
 
-4. **Potencial contaminação de dados**: As transcrições do CMU-MOSEI originam-
-   se de vídeos públicos do YouTube e podem ter aparecido no corpus de pré-
-   treinamento do Gemma [7], potencialmente inflando o desempenho baseado em
-   texto (C1). Declaramos isso como limitação sem estimativa quantitativa da
-   sobreposição.
+The small effect size (η² = 0.016) reflects the high inter-sample variance typical of multi-label classification at the individual level.
 
-5. **Quantização AWQ 4-bit**: O modelo foi quantizado de bfloat16 para inteiros
-   de 4 bits via AWQ [2]. Embora o AWQ seja projetado para preservar a
-   generalização entre modalidades, não medimos o delta de performance induzido
-   pela quantização em tarefas de computação afetiva especificamente.
+# VI. DISCUSSION
 
-6. **Força dos baselines**: O baseline do OMG utiliza regras manuais e o do
-   MOSEI utiliza Regressão Logística — nenhum dos dois representa o estado da
-   arte em reconhecimento de emoção facial supervisionado. Baselines mais
-   fortes (e.g., redes neurais fine-tuned sobre FACET ou CNNs end-to-end)
-   poderiam estreitar a diferença com o LLM no texto.
+## A. Modality-Dependent Advantage
 
----
+The central finding of this study is that the LLM's advantage over traditional methods **is not universal but modality-dependent**. Table VIII synthesizes the results with corresponding statistical evidence.
 
-# Referências
+TABLE VIII: Comparative advantage summary by modality and task.
 
-[1] Gemma Team, Google DeepMind. "Gemma 3 Technical Report." *arXiv preprint arXiv:2503.19786*, 2025. (Base arquitetural do Gemma 4 26B-A4B usado neste estudo; model card: ai.google.dev/gemma/docs/core/model_card_4)
+| Modality / Task | Winner | Statistical Evidence |
+|---|---|---|
+| Emotion from **text** (MOSEI, C1) | **LLM** | macro-F1 0.416 vs. 0.333 (+25%); Wilcoxon p < 0.001; bootstrap CI [+0.079, +0.185] |
+| Continuous valence — **native vision** (OMG, C3) | **Tie** | CCC 0.158 vs. 0.148; p = 0.421; d = 0.07; Friedman rank 1.87 (best) |
+| Continuous valence — blendshapes (OMG, C2 few-shot) | Slight tie | CCC 0.127 vs. 0.148; p = 0.229; d = −0.30 |
+| Continuous valence — blendshapes (OMG, C2 zero-shot) | **Traditional** | CCC 0.090 vs. 0.148; **p = 0.013**; d = 0.64 |
+| Emotion from **numerical FACET** (MOSEI, C2) | **Traditional** | macro-F1 0.057–0.130 vs. 0.333; Wilcoxon p < 0.001 |
+| **Omnibus (OMG, 4 conditions)** | **—** | **Friedman χ² = 10.04; p = 0.018; W = 0.223** |
 
-[2] J. Lin, J. Tang, H. Tang, S. Yang, W.-M. Chen, W.-C. Wang, G. Xiao, X. Dang, C. Gan, and S. Han. "AWQ: Activation-aware Weight Quantization for LLM Compression and Acceleration." In *Proc. MLSys*, 2024.
+**Text → LLM excels.** The LLM leverages its massive pre-training corpus to recognize emotional content in natural language with zero-shot capability that surpasses a supervised classifier trained on 6,000 labeled samples. This aligns with the broader trend identified in recent surveys [13], [14]: LLMs offer competitive or superior affective understanding when the input is textual, even without task-specific fine-tuning.
 
-[3] W. Kwon, Z. Li, S. Zhuang, Y. Sheng, L. Zheng, C. H. Yu, J. E. Gonzalez, H. Zhang, and I. Stoica. "Efficient Memory Management for Large Language Model Serving with PagedAttention." In *Proc. 29th SOSP*, 2023.
+**Image → competitive.** The Gemma 4 vision encoder (~550 M parameters) achieves parity with the rule-based blendshape engine on continuous valence regression (CCC 0.158 vs. 0.148, p = 0.421). Although neither method reaches high absolute CCC values, the LLM's ability to process raw pixels without any feature engineering represents a qualitative advance. The Friedman mean rank analysis places vision (1.87) ahead of the baseline (2.13), suggesting a consistent — if not yet significant — advantage.
 
-[4] LangChain, Inc. "LangGraph: Building Language Agents as Graphs." 2024. github.com/langchain-ai/langgraph.
+**Serialized numerical features → LLM fails.** When features are serialized as text tokens, the LLM underperforms dramatically. On MOSEI, C2 zero-shot yields macro-F1 = 0.057 — below random chance. On OMG, C2 zero-shot is the only condition significantly inferior to the baseline (p = 0.013). This is consistent with known limitations of transformer architectures in processing numerical data encoded as text strings [16]: the tokenizer fragments multi-digit numbers, destroying magnitude relationships that are trivially accessible to traditional ML operating on floating-point vectors.
 
-[5] P. V. A. Barros, N. Churamani, A. Lim, and S. Wermter. "The OMG-Empathy Dataset: Evaluating the Impact of Affective Behavior in Storytelling." In *8th ACII*, pp. 1–7, IEEE, 2019.
+## B. Role of Few-Shot Learning
 
-[6] L. I.-K. Lin. "A Concordance Correlation Coefficient to Evaluate Reproducibility." *Biometrics*, vol. 45, no. 1, pp. 255–268, 1989.
+TABLE IX: Impact of few-shot learning across conditions.
 
-[7] A. B. Zadeh, P. P. Liang, S. Poria, E. Cambria, and L.-P. Morency. "Multimodal Language Analysis in the Wild: CMU-MOSEI Dataset and Interpretable Dynamic Fusion Graph." In *Proc. 56th ACL*, pp. 2236–2246, 2018.
+| Condition | Zero-shot | Few-shot | Improvement |
+|---|---|---|---|
+| C1 text (MOSEI, macro-F1) | 0.416 | 0.416 | +0.0% |
+| C2 blendshapes (OMG, CCC) | +0.090 | +0.127 | +41% |
+| C2 FACET (MOSEI, macro-F1) | 0.057 | 0.130 | +128% |
 
-[8] P. Ekman. "An Argument for Basic Emotions." *Cognition & Emotion*, vol. 6, no. 3-4, pp. 169–200, 1992.
+When the LLM already performs well (text), few-shot examples add little. When the input is unfamiliar (numerical features), few-shot examples provide crucial calibration — although insufficient to match trained baselines (Table IX). This suggests that the bottleneck is representational (the model's inability to effectively process numerical tokens), rather than simply a matter of task framing.
 
-[9] A. Zadeh, P. P. Liang, S. Poria, P. Vij, E. Cambria, and L.-P. Morency. "Multi-attention Recurrent Network for Human Communication Comprehension." In *32nd AAAI*, 2018.
+## C. Implications for Social Robotics
 
-[10] iMotions A/S. "FACET — Facial Action Coding System." imotions.com/biosensor/facs-facial-action-coding-system.
+These results have direct implications for affective perception architectures in social robotics [19], [20], [21]. The architecture proposed by Tomaz et al. processes blendshape coefficients through a rule-based pipeline to estimate Valence–Arousal in real-time for HRI. Our findings indicate that such rule-based approaches remain competitive for continuous affective regression from structured facial features. However, when textual information is available — such as speech transcriptions from dialogue partners — an LLM-based module can provide substantially richer emotional understanding, capturing nuanced states (anger, disgust, fear) that rule-based systems miss.
 
-[11] R. Surdulescu et al. "Blendshapes GHUM: Real-time Monocular Facial Blendshape Prediction." *arXiv preprint arXiv:2309.05782*, 2023.
+Recent work on LLM-driven social robots [27], [28], [29] demonstrates that integrating affective perception with language understanding enhances empathic interaction quality. The modality-dependent performance observed in this study suggests a **hybrid architecture** [22] as the most promising path: rule-based or traditional ML for real-time feature-based perception, complemented by LLM-based reasoning for text-rich and multimodal contexts where latency constraints are relaxed.
 
-[12] J. A. Russell. "A Circumplex Model of Affect." *Journal of Personality and Social Psychology*, vol. 39, no. 6, pp. 1161–1178, 1980.
+The integration of LLMs as cognitive modules in robotic systems, as demonstrated by SayCan [23], RT-2 [24], and related frameworks [25], [26], further motivates this approach. While current LLMs cannot operate at frame-level granularity (Section VII), they can serve as higher-level affective reasoning engines that process aggregated social signals at the interaction turn level.
 
-[13] "Affective Computing in the Era of Large Language Models: A Survey from the NLP Perspective." *arXiv preprint arXiv:2408.04638*, 2024.
+# VII. COMPUTATIONAL COST ANALYSIS
 
-[14] "Multimodal Large Language Models Meet Multimodal Emotion Recognition and Reasoning: A Survey." *arXiv preprint arXiv:2509.24322*, 2025.
+A practical deployment of LLM-based affective perception requires understanding its computational footprint relative to traditional baselines. Table X summarizes the model architecture and serving configuration; Table XI reports per-condition token budgets and measured latencies; Fig. 5 visualizes the latency distributions.
 
-[15] "Fluent but Unfeeling: The Emotional Blind Spots of Language Models." *arXiv preprint arXiv:2509.09593*, 2025.
+## A. Model and Infrastructure
 
-[16] "Large Language Models Meet Text-Centric Multimodal Sentiment Analysis: A Survey." *arXiv preprint arXiv:2406.08068*, 2024.
+The inference pipeline employs **Gemma 4 26B-A4B-it** [1], a Mixture-of-Experts (MoE) model with 25.2 B total parameters of which only 3.8 B are active per token (128 experts, top-8 routing + 1 shared). The model is quantized to 4-bit integers via **AWQ** [2], reducing memory to approximately 13.5 GB — comfortably within the 24 GB budget of a single NVIDIA L4 GPU hosted on a GCP Spot VM. Inference is served through **vLLM** [3] with PagedAttention, exposing an OpenAI-compatible API at temperature 0 (deterministic greedy decoding) with a maximum output budget of 512 tokens.
+
+TABLE X: Model architecture and serving configuration.
+
+| Parameter | Value |
+|---|---|
+| Model | Gemma 4 26B-A4B-it (AWQ 4-bit) |
+| Architecture | MoE — 25.2 B total, 3.8 B active per token |
+| Layers / Experts | 30 layers, 128 experts (top-8 + 1 shared) |
+| Vision encoder | SigLIP (~550 M params, frozen) |
+| Context window | 262,144 tokens |
+| Quantization | AWQ 4-bit (weight-only) |
+| Memory footprint | ~13.5 GB |
+| Serving engine | vLLM (PagedAttention) |
+| Hardware | NVIDIA L4 24 GB (GCP Spot VM) |
+| Decoding | Greedy (temperature = 0), max_tokens = 512 |
+
+## B. Token Budget and Latency per Condition
+
+Token counts are estimated from prompt structure; latencies are measured end-to-end (prompt construction through JSON parsing) across all experimental samples.
+
+TABLE XI: Estimated token budget and measured inference latency per condition.
+
+| Condition | Input tokens | Output tokens | Total tokens | Median latency | Mean latency | P95 latency | N |
+|---|---|---|---|---|---|---|---|
+| OMG C2 (blendshapes, 0-shot) | ~540 | ~30 | ~570 | 918 ms | 1,035 ms | 1,609 ms | 240 |
+| OMG C3 (vision, 0-shot) | ~3,820 | ~30 | ~3,850 | 2,387 ms | 4,553 ms | 15,635 ms | 240 |
+| MOSEI C1 (text, 0-shot) | ~310 | ~80 | ~390 | 1,817 ms | 1,828 ms | 1,923 ms | 400 |
+| MOSEI C2 (FACET, 0-shot) | ~510 | ~80 | ~590 | 1,860 ms | 1,872 ms | 1,954 ms | 400 |
+
+The vision condition (C3) exhibits a 4.4× latency increase over text-only conditions due to the cost of encoding three JPEG keyframes through the SigLIP vision encoder (~1,200 tokens per image, ~3,600 visual tokens total). Text and structured-feature conditions show stable, low-variance latencies (σ = 74–113 ms), while the vision condition presents high variance (σ = 4,560 ms) and a heavy-tailed distribution (P95 = 15.6 s), likely driven by variable image complexity and KV-cache pressure from the larger context window. A Kruskal-Wallis test confirms that all four conditions differ significantly in latency (H = 621.96, **p < 10⁻¹³⁴**, η² ≈ 0.49), and Dunn post-hoc comparisons with Bonferroni correction show that every pairwise difference is significant (p < 0.05 in all six pairs), including the relatively close MOSEI C1 vs. C2 (p < 10⁻¹⁵).
+
+![Fig. 5](figures/latency_boxplot.png)
+
+*Fig. 5. Distribution of per-sample inference latency for each experimental condition. Box plots show median, IQR, and outliers. Vision-based C3 exhibits substantially higher and more variable latency than text-only or feature-based conditions.*
+
+## C. Aggregate Throughput and Cost
+
+Across all 1,280 LLM inference calls in this study, the total GPU time dedicated to LLM inference was approximately **47 minutes**. At the GCP Spot VM rate for an L4 GPU (~$0.24/hr), the entire experimental campaign cost approximately **$0.19** in compute — demonstrating that LLM-based affective evaluation, even with a 26 B-parameter model, is remarkably affordable at research scale.
+
+TABLE XII: Aggregate throughput and cost.
+
+| Metric | Value |
+|---|---|
+| Total LLM API calls | 1,280 |
+| Total LLM inference time | 2,821 s (47.0 min) |
+| Average throughput | 0.45 calls/s |
+| Mean latency (all conditions) | 2,204 ms |
+| Estimated GPU cost (LLM only) | ~$0.19 |
+
+## D. LLM vs. Baseline: Computational Trade-offs
+
+Table XIII contrasts the computational profile of the LLM approach with the traditional baselines used in this study.
+
+TABLE XIII: Computational requirements comparison: LLM vs. traditional baselines.
+
+| Metric | LLM (Gemma 4 26B) | Baseline (Rules / LogReg) |
+|---|---|---|
+| GPU required | Yes (L4 24 GB) | No (CPU only) |
+| Model memory | ~13.5 GB (AWQ 4-bit) | < 1 MB |
+| Active parameters per forward pass | 3.8 B | < 1 K |
+| Latency — text input (C1) | ~1,828 ms | < 1 ms |
+| Latency — vision input (C3) | ~4,553 ms | ~15 ms (MediaPipe) |
+| Latency — structured features (C2) | ~1,035 ms | < 1 ms |
+| Real-time capable (≥ 30 fps) | No | Yes |
+| Requires dedicated GPU or API | Yes | No |
+
+The LLM achieves substantially higher recognition accuracy (Sections V-A through V-C), but at a latency three orders of magnitude greater than rule-based or logistic regression baselines. At approximately 1–5 seconds per sample, the current pipeline is unsuitable for real-time robotic perception at frame-level granularity. However, for window-level social interaction analysis (e.g., analyzing 4-second dialogue turns), the latency is operationally acceptable and could be further reduced via batched inference, speculative decoding [3], or smaller distilled models.
+
+# VIII. LIMITATIONS
+
+Several caveats should be considered when interpreting these results:
+
+1. **Sample size (OMG)**: 15 of 30 available test videos were evaluated. Inter-video variance is high (SD 0.15–0.21), and no pairwise comparison between C3 and the baseline reaches significance (Table III). Expanding to the full test set would increase statistical power.
+
+2. **Threshold selection (MOSEI)**: The LLM emotion threshold was selected via grid search on the test set itself (best = 0.15), which may introduce mild optimistic bias. A separate validation set should be used for final calibration.
+
+3. **Single prompt / single seed**: Results are based on a single prompt template and deterministic decoding (temperature = 0). Although the MoE architecture introduces minimal stochastic variation, prompt sensitivity remains a known concern for LLM-based evaluation [15].
+
+4. **Potential data contamination**: CMU-MOSEI transcripts originate from public YouTube videos and may have appeared in Gemma's pre-training corpus [7], potentially inflating text-based (C1) performance. This is declared as a limitation without quantitative estimate of overlap.
+
+5. **AWQ 4-bit quantization**: The model was quantized from bfloat16 to 4-bit integers via AWQ [2]. Although AWQ is designed to preserve cross-modal generalization, the performance delta induced by quantization on affective computing tasks specifically was not measured.
+
+6. **Baseline strength**: The OMG baseline uses manual rules and the MOSEI baseline uses Logistic Regression — neither represents the state of the art in supervised facial emotion recognition [30]. Stronger baselines (e.g., fine-tuned neural networks on FACET or end-to-end CNNs) could narrow the gap with the text-based LLM.
+
+# REFERENCES
+
+*Models and Infrastructure*
+
+[1] Gemma Team, Google DeepMind, "Gemma 3 Technical Report," *arXiv preprint arXiv:2503.19786*, 2025. (Architectural base of Gemma 4 26B-A4B used in this study; model card: ai.google.dev/gemma/docs/core/model_card_4)
+
+[2] J. Lin, J. Tang, H. Tang, S. Yang, W.-M. Chen, W.-C. Wang, G. Xiao, X. Dang, C. Gan, and S. Han, "AWQ: Activation-aware Weight Quantization for LLM Compression and Acceleration," in *Proc. MLSys*, 2024.
+
+[3] W. Kwon, Z. Li, S. Zhuang, Y. Sheng, L. Zheng, C. H. Yu, J. E. Gonzalez, H. Zhang, and I. Stoica, "Efficient Memory Management for Large Language Model Serving with PagedAttention," in *Proc. 29th SOSP*, 2023.
+
+[4] LangChain, Inc., "LangGraph: Building Language Agents as Graphs," 2024. github.com/langchain-ai/langgraph.
+
+*Datasets and Metrics*
+
+[5] P. V. A. Barros, N. Churamani, A. Lim, and S. Wermter, "The OMG-Empathy Dataset: Evaluating the Impact of Affective Behavior in Storytelling," in *8th ACII*, pp. 1–7, IEEE, 2019.
+
+[6] L. I.-K. Lin, "A Concordance Correlation Coefficient to Evaluate Reproducibility," *Biometrics*, vol. 45, no. 1, pp. 255–268, 1989.
+
+[7] A. B. Zadeh, P. P. Liang, S. Poria, E. Cambria, and L.-P. Morency, "Multimodal Language Analysis in the Wild: CMU-MOSEI Dataset and Interpretable Dynamic Fusion Graph," in *Proc. 56th ACL*, pp. 2236–2246, 2018.
+
+[8] P. Ekman, "An Argument for Basic Emotions," *Cognition & Emotion*, vol. 6, no. 3-4, pp. 169–200, 1992.
+
+[9] A. Zadeh, P. P. Liang, S. Poria, P. Vij, E. Cambria, and L.-P. Morency, "Multi-attention Recurrent Network for Human Communication Comprehension," in *32nd AAAI*, 2018.
+
+[10] iMotions A/S, "FACET — Facial Action Coding System," imotions.com/biosensor/facs-facial-action-coding-system.
+
+[11] R. Surdulescu et al., "Blendshapes GHUM: Real-time Monocular Facial Blendshape Prediction," *arXiv preprint arXiv:2309.05782*, 2023.
+
+*Theoretical Models*
+
+[12] J. A. Russell, "A Circumplex Model of Affect," *Journal of Personality and Social Psychology*, vol. 39, no. 6, pp. 1161–1178, 1980.
+
+*LLMs for Affective Computing*
+
+[13] "Affective Computing in the Era of Large Language Models: A Survey from the NLP Perspective," *arXiv preprint arXiv:2408.04638*, 2024.
+
+[14] "Multimodal Large Language Models Meet Multimodal Emotion Recognition and Reasoning: A Survey," *arXiv preprint arXiv:2509.24322*, 2025.
+
+[15] "Fluent but Unfeeling: The Emotional Blind Spots of Language Models," *arXiv preprint arXiv:2509.09593*, 2025.
+
+[16] "Large Language Models Meet Text-Centric Multimodal Sentiment Analysis: A Survey," *arXiv preprint arXiv:2406.08068*, 2024.
+
+*Affective Computing — Foundations*
+
+[17] R. W. Picard, *Affective Computing*. MIT Press, 1997.
+
+[18] R. A. Calvo and S. D'Mello, "Affect Detection: An Interdisciplinary Review of Models, Methods, and Their Applications," *IEEE Trans. Affective Computing*, vol. 1, no. 1, pp. 18–37, 2010.
+
+*HRI and Social Robotics*
+
+[19] M. A. Goodrich and A. C. Schultz, "Human–Robot Interaction: A Survey," *Foundations and Trends in Human–Computer Interaction*, vol. 1, no. 3, pp. 203–275, 2007.
+
+[20] C. Breazeal, "Toward Sociable Robots," *Robotics and Autonomous Systems*, vol. 42, nos. 3-4, pp. 167–175, 2003.
+
+[21] T. Fong, I. Nourbakhsh, and K. Dautenhahn, "A Survey of Socially Interactive Robots," *Robotics and Autonomous Systems*, vol. 42, nos. 3-4, pp. 143–166, 2003.
+
+[22] M. Spitale, M. Axelsson, and H. Gunes, "Past, Present, and Future: A Survey of The Evolution of Affective Robotics For Well-being," *arXiv preprint arXiv:2407.02957*, 2024.
+
+*LLMs for Robotics*
+
+[23] M. Ahn, A. Brohan, N. Brown, Y. Chebotar, et al., "Do As I Can, Not As I Say: Grounding Language in Robotic Affordances," *arXiv preprint arXiv:2204.01691*, 2022.
+
+[24] B. Zitkovich, T. Yu, S. Xu, P. Xu, et al., "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control," in *Proc. 7th CoRL*, PMLR, 2023.
+
+[25] K. Kawaharazuka et al., "A Survey of Robot Intelligence with Large Language Models," *Applied Sciences*, vol. 14, no. 19, 8868, 2024.
+
+[26] S. Vemprala, R. Bonatti, A. Bucker, and A. Kapoor, "ChatGPT for Robotics: Design Principles and Model Abilities," *arXiv preprint arXiv:2306.17582*, 2023.
+
+*LLMs for Social Robotics and Affective Perception*
+
+[27] G. Laban et al., "Leveraging Large Language Models in Human-Robot Interaction: A Critical Analysis of Potential and Pitfalls," *arXiv preprint arXiv:2405.00693*, 2024.
+
+[28] R. Magalhães et al., "Nadine: An LLM-driven Intelligent Social Robot with Affective Capabilities and Human-like Memory," *arXiv preprint arXiv:2405.20189*, 2024.
+
+[29] N. Churamani et al., "Empathic Grounding: Explorations using Multimodal Interaction and Large Language Models with Conversational Agents," *arXiv preprint arXiv:2407.01824*, 2024.
+
+[30] S. Li and W. Deng, "Deep Facial Expression Recognition: A Survey," *IEEE Trans. Affective Computing*, vol. 13, no. 3, pp. 1195–1215, 2022.

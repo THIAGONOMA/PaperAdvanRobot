@@ -460,3 +460,381 @@
   year    = {2024}
 }
 ```
+
+---
+
+## E. Computação Afetiva — Fundações
+
+---
+
+### E1. Affective Computing (livro fundacional)
+
+**Livro:** Affective Computing
+
+**Autora:** Rosalind W. Picard
+
+**Fonte:** MIT Press, 1997. ISBN 978-0-262-16170-1
+
+**Link:** [mitpress.mit.edu/9780262161701](https://mitpress.mit.edu/9780262161701/affective-computing/)
+
+**Resumo:** Texto fundacional que define *affective computing* — computação que se relaciona com, surge de, ou influencia deliberadamente emoções. Argumenta que emoções desempenham papel essencial na percepção, aprendizado e tomada de decisão, e que computadores verdadeiramente inteligentes precisam reconhecer, compreender e expressar emoções. Estabelece a agenda de pesquisa para sistemas afetivos, incluindo reconhecimento de emoção por sinais fisiológicos e faciais. Referência obrigatória para posicionar o estudo de percepção afetiva em robótica social.
+
+**BibTeX:**
+```bibtex
+@book{Picard1997AffectiveComputing,
+  author    = {Picard, Rosalind W.},
+  title     = {Affective Computing},
+  publisher = {MIT Press},
+  year      = {1997},
+  isbn      = {978-0-262-16170-1}
+}
+```
+
+---
+
+### E2. Calvo & D'Mello — Affect Detection: An Interdisciplinary Review
+
+**Paper:** Affect Detection: An Interdisciplinary Review of Models, Methods, and Their Applications
+
+**Autores:** Rafael A. Calvo and Sidney D'Mello
+
+**Fonte:** IEEE Transactions on Affective Computing, vol. 1, no. 1, pp. 18–37, 2010
+
+**Link:** [DOI: 10.1109/T-AFFC.2010.1](https://doi.org/10.1109/T-AFFC.2010.1)
+
+**Resumo:** Review interdisciplinar de métodos de detecção de afeto (face, voz, texto, fisiologia, postura), modelos teóricos (categóricos vs. dimensionais) e aplicações (tutoria, saúde, HCI). Referência clássica que contextualiza as diferentes modalidades avaliadas neste estudo (texto C1, face C2/C3).
+
+**BibTeX:**
+```bibtex
+@article{Calvo2010AffectDetection,
+  author  = {Calvo, Rafael A. and D'Mello, Sidney},
+  title   = {Affect Detection: An Interdisciplinary Review of Models, Methods, and Their Applications},
+  journal = {IEEE Transactions on Affective Computing},
+  volume  = {1},
+  number  = {1},
+  pages   = {18--37},
+  year    = {2010},
+  doi     = {10.1109/T-AFFC.2010.1}
+}
+```
+
+---
+
+## F. Interação Humano-Robô (HRI) e Robótica Social
+
+---
+
+### F1. Goodrich & Schultz — Human–Robot Interaction: A Survey
+
+**Paper:** Human–Robot Interaction: A Survey
+
+**Autores:** Michael A. Goodrich and Alan C. Schultz
+
+**Fonte:** Foundations and Trends in Human–Computer Interaction, vol. 1, no. 3, pp. 203–275, 2007
+
+**Link:** [DOI: 10.1561/1100000005](https://doi.org/10.1561/1100000005)
+
+**Resumo:** Survey fundacional do campo de HRI. Define o campo como multidisciplinar (robótica, psicologia cognitiva, fatores humanos, design), categoriza níveis de autonomia, modos de interação e desafios futuros. Referência obrigatória para contextualizar o uso de percepção afetiva em robôs que interagem com humanos.
+
+**BibTeX:**
+```bibtex
+@article{Goodrich2007HRISurvey,
+  author  = {Goodrich, Michael A. and Schultz, Alan C.},
+  title   = {Human--Robot Interaction: A Survey},
+  journal = {Foundations and Trends in Human--Computer Interaction},
+  volume  = {1},
+  number  = {3},
+  pages   = {203--275},
+  year    = {2007},
+  doi     = {10.1561/1100000005}
+}
+```
+
+---
+
+### F2. Breazeal — Toward Sociable Robots
+
+**Paper:** Toward Sociable Robots
+
+**Autora:** Cynthia Breazeal
+
+**Fonte:** Robotics and Autonomous Systems, vol. 42, nos. 3-4, pp. 167–175, 2003
+
+**Link:** [DOI: 10.1016/S0921-8890(02)00373-1](https://doi.org/10.1016/S0921-8890(02)00373-1)
+
+**Resumo:** Trabalho fundacional em robótica social. Categoriza robôs sociais em quatro paradigmas (socially evocative, social interface, socially receptive, sociable) e demonstra a importância de percepção afetiva, feedback expressivo e turn-taking para robôs sociáveis, usando Kismet como estudo de caso. Relevante para justificar por que percepção emocional é essencial em robótica social.
+
+**BibTeX:**
+```bibtex
+@article{Breazeal2003SociableRobots,
+  author  = {Breazeal, Cynthia},
+  title   = {Toward Sociable Robots},
+  journal = {Robotics and Autonomous Systems},
+  volume  = {42},
+  number  = {3-4},
+  pages   = {167--175},
+  year    = {2003},
+  doi     = {10.1016/S0921-8890(02)00373-1}
+}
+```
+
+---
+
+### F3. Fong, Nourbakhsh & Dautenhahn — A Survey of Socially Interactive Robots
+
+**Paper:** A Survey of Socially Interactive Robots
+
+**Autores:** Terrence Fong, Illah Nourbakhsh, and Kerstin Dautenhahn
+
+**Fonte:** Robotics and Autonomous Systems, vol. 42, nos. 3-4, pp. 143–166, 2003
+
+**Link:** [DOI: 10.1016/S0921-8890(02)00372-X](https://doi.org/10.1016/S0921-8890(02)00372-X)
+
+**Resumo:** Survey abrangente de robôs socialmente interativos. Classifica os designs (anthropomorphic, zoomorphic, funcional), define aspectos de interação social (reconhecimento de emoção, comunicação, aprendizado social) e revisa mais de 50 sistemas robóticos. Contextualiza a necessidade de percepção afetiva como capacidade central para robôs que interagem com pessoas.
+
+**BibTeX:**
+```bibtex
+@article{Fong2003SociallyInteractive,
+  author  = {Fong, Terrence and Nourbakhsh, Illah and Dautenhahn, Kerstin},
+  title   = {A Survey of Socially Interactive Robots},
+  journal = {Robotics and Autonomous Systems},
+  volume  = {42},
+  number  = {3-4},
+  pages   = {143--166},
+  year    = {2003},
+  doi     = {10.1016/S0921-8890(02)00372-X}
+}
+```
+
+---
+
+### F4. Spitale et al. — Affective Robotics for Well-being Survey
+
+**Paper:** Past, Present, and Future: A Survey of The Evolution of Affective Robotics For Well-being
+
+**Autores:** Micol Spitale, Minja Axelsson, and Hatice Gunes
+
+**Fonte:** arXiv preprint arXiv:2407.02957, 2024
+
+**Link:** [2407.02957](https://arxiv.org/abs/2407.02957)
+
+**Resumo:** Survey recente que mapeia a evolução da robótica afetiva, desde reconhecimento unimodal de expressões faciais (até 2020) até abordagens multimodais e generativas com LLMs (2024). Documenta a transição de Wizard-of-Oz para sistemas autônomos de geração comportamental. Diretamente relevante para posicionar nosso trabalho na interseção de LLMs e robótica afetiva.
+
+**BibTeX:**
+```bibtex
+@article{Spitale2024AffectiveRobotics,
+  author  = {Spitale, Micol and Axelsson, Minja and Gunes, Hatice},
+  title   = {Past, Present, and Future: A Survey of The Evolution of Affective Robotics For Well-being},
+  journal = {arXiv preprint arXiv:2407.02957},
+  year    = {2024}
+}
+```
+
+---
+
+## G. LLMs para Robótica
+
+---
+
+### G1. Ahn et al. — SayCan: Do As I Can, Not As I Say
+
+**Paper:** Do As I Can, Not As I Say: Grounding Language in Robotic Affordances
+
+**Autores:** Michael Ahn, Anthony Brohan, Noah Brown, Yevgen Chebotar, ..., Andy Zeng
+
+**Fonte:** arXiv preprint arXiv:2204.01691, 2022 (posteriormente em CoRL 2022)
+
+**Link:** [2204.01691](https://arxiv.org/abs/2204.01691)
+
+**Resumo:** Primeiro sistema bem-sucedido a integrar LLMs de bilhões de parâmetros com robôs reais. Combina o conhecimento semântico de alto nível de um LLM (PaLM) com value functions de affordances aprendidas para selecionar ações fisicamente viáveis. Pioneiro na decomposição "Say" + "Can" que se tornou paradigma padrão. Referência essencial para contextualizar o uso de LLMs em robótica.
+
+**BibTeX:**
+```bibtex
+@article{Ahn2022SayCan,
+  author  = {Ahn, Michael and Brohan, Anthony and Brown, Noah and Chebotar, Yevgen and Cortes, Omar and David, Byron and Finn, Chelsea and others},
+  title   = {Do As {I} Can, Not As {I} Say: Grounding Language in Robotic Affordances},
+  journal = {arXiv preprint arXiv:2204.01691},
+  year    = {2022}
+}
+```
+
+---
+
+### G2. Brohan et al. — RT-2: Vision-Language-Action Models
+
+**Paper:** RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control
+
+**Autores:** Brohan Zitkovich, Ted Yu, Sichun Xu, Peng Xu, ..., Karol Hausman
+
+**Fonte:** Proceedings of the 7th Conference on Robot Learning (CoRL), PMLR, 2023
+
+**Link:** [proceedings.mlr.press/v229/zitkovich23a.html](https://proceedings.mlr.press/v229/zitkovich23a.html)
+
+**Resumo:** Modelo VLA (Vision-Language-Action) unificado que co-fine-tuna VLMs (PaLM-E, PaLI-X) com trajetórias robóticas, tratando ações como tokens de texto. Demonstra generalização emergente (raciocínio simbólico, reconhecimento humano) e chain-of-thought para inferência semântica complexa. Estabelece que modelos multimodais grandes transferem conhecimento web para controle robótico — diretamente relevante para motivar a hipótese de que LLMs multimodais podem reconhecer emoções para robótica social.
+
+**BibTeX:**
+```bibtex
+@inproceedings{Zitkovich2023RT2,
+  author    = {Zitkovich, Brohan and Yu, Ted and Xu, Sichun and others},
+  title     = {{RT-2}: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control},
+  booktitle = {Proceedings of the 7th Conference on Robot Learning (CoRL)},
+  series    = {PMLR},
+  year      = {2023}
+}
+```
+
+---
+
+### G3. Kawaharazuka et al. — Survey of Robot Intelligence with LLMs
+
+**Paper:** A Survey of Robot Intelligence with Large Language Models
+
+**Autores:** Kento Kawaharazuka et al.
+
+**Fonte:** Applied Sciences, vol. 14, no. 19, 8868, 2024
+
+**Link:** [DOI: 10.3390/app14198868](https://doi.org/10.3390/app14198868)
+
+**Resumo:** Survey amplo sobre inteligência robótica com LLMs, cobrindo planejamento de tarefas, navegação, manipulação, e geração de comportamento social. Revisa SayCan, RT-2, Code-as-Policies e outros paradigmas. Documenta que LLMs melhoram generalização em ambientes dinâmicos mas enfrentam gargalos de latência e grounding. Contextualiza a contribuição de nosso estudo como avaliação da percepção afetiva como capacidade fundamental para robôs sociais inteligentes.
+
+**BibTeX:**
+```bibtex
+@article{Kawaharazuka2024RobotLLMSurvey,
+  author  = {Kawaharazuka, Kento and others},
+  title   = {A Survey of Robot Intelligence with Large Language Models},
+  journal = {Applied Sciences},
+  volume  = {14},
+  number  = {19},
+  pages   = {8868},
+  year    = {2024},
+  doi     = {10.3390/app14198868}
+}
+```
+
+---
+
+### G4. Vemprala et al. — ChatGPT for Robotics
+
+**Paper:** ChatGPT for Robotics: Design Principles and Model Abilities
+
+**Autores:** Sai Vemprala, Rogerio Bonatti, Arthur Bucker, and Ashish Kapoor
+
+**Fonte:** Microsoft Research, arXiv preprint arXiv:2306.17582, 2023
+
+**Link:** [2306.17582](https://arxiv.org/abs/2306.17582)
+
+**Resumo:** Framework de design para integrar ChatGPT em pipelines robóticos: geração de código, planejamento de alto nível, e interpretação de cenas. Demonstra que LLMs podem servir como "cérebro" de robôs via prompting sem fine-tuning. Relevante como paradigma de uso zero-shot/few-shot de LLMs em robótica — análogo ao nosso uso para percepção afetiva.
+
+**BibTeX:**
+```bibtex
+@article{Vemprala2023ChatGPTRobotics,
+  author  = {Vemprala, Sai and Bonatti, Rogerio and Bucker, Arthur and Kapoor, Ashish},
+  title   = {{ChatGPT} for Robotics: Design Principles and Model Abilities},
+  journal = {arXiv preprint arXiv:2306.17582},
+  year    = {2023}
+}
+```
+
+---
+
+## H. LLMs para Robótica Social e Percepção Afetiva
+
+---
+
+### H1. Laban et al. — LLMs in HRI: A Critical Analysis
+
+**Paper:** Leveraging Large Language Models in Human-Robot Interaction: A Critical Analysis of Potential and Pitfalls
+
+**Autores:** Guy Laban et al.
+
+**Fonte:** arXiv preprint arXiv:2405.00693, 2024
+
+**Link:** [2405.00693](https://arxiv.org/abs/2405.00693)
+
+**Resumo:** Meta-estudo de 250+ papers de HRI (2020–2023) que identifica onde LLMs e VLMs podem beneficiar robôs socialmente assistivos. Categoriza aplicações (companhia, saúde, educação), analisa valores humanos a preservar, e discute riscos (privacidade, viés, segurança). Referência central para contextualizar responsabilidade e limitações do uso de LLMs em HRI.
+
+**BibTeX:**
+```bibtex
+@article{Laban2024LLMsHRI,
+  author  = {Laban, Guy and others},
+  title   = {Leveraging Large Language Models in Human-Robot Interaction: A Critical Analysis of Potential and Pitfalls},
+  journal = {arXiv preprint arXiv:2405.00693},
+  year    = {2024}
+}
+```
+
+---
+
+### H2. Magalhães et al. — Nadine: LLM-driven Social Robot
+
+**Paper:** Nadine: An LLM-driven Intelligent Social Robot with Affective Capabilities and Human-like Memory
+
+**Autores:** Magalhães et al.
+
+**Fonte:** arXiv preprint arXiv:2405.20189, 2024
+
+**Link:** [2405.20189](https://arxiv.org/abs/2405.20189)
+
+**Resumo:** Sistema LLM-driven completo implantado no robô social Nadine: percepção multimodal (visão + voz), memória episódica via RAG, e sistema afetivo com Pleasure-Arousal-Dominance. Demonstra que integrar estados emocionais internos melhora rapport e empatia percebida. Diretamente relevante: valida que percepção afetiva é componente essencial para robôs sociais com LLMs.
+
+**BibTeX:**
+```bibtex
+@article{Magalhaes2024Nadine,
+  author  = {Magalh\~{a}es, Rodrigo and others},
+  title   = {Nadine: An {LLM}-driven Intelligent Social Robot with Affective Capabilities and Human-like Memory},
+  journal = {arXiv preprint arXiv:2405.20189},
+  year    = {2024}
+}
+```
+
+---
+
+### H3. Churamani et al. — Empathic Grounding with LLMs
+
+**Paper:** Empathic Grounding: Explorations using Multimodal Interaction and Large Language Models with Conversational Agents
+
+**Autores:** Nikhil Churamani et al.
+
+**Fonte:** arXiv preprint arXiv:2407.01824, 2024
+
+**Link:** [2407.01824](https://arxiv.org/abs/2407.01824)
+
+**Resumo:** Estudo que usa GPT-3.5 em robô social para grounding empático — LLM recebe sinais emocionais multimodais e gera respostas empáticas. Participantes avaliaram o robô significativamente mais alto em empatia (p < 0,05), inteligência emocional (p < 0,05) e escuta empática. Evidência direta de que percepção afetiva + LLM melhora qualidade de HRI.
+
+**BibTeX:**
+```bibtex
+@article{Churamani2024EmpathicGrounding,
+  author  = {Churamani, Nikhil and others},
+  title   = {Empathic Grounding: Explorations using Multimodal Interaction and Large Language Models with Conversational Agents},
+  journal = {arXiv preprint arXiv:2407.01824},
+  year    = {2024}
+}
+```
+
+---
+
+### H4. Li & Deng — Deep Facial Expression Recognition: A Survey
+
+**Paper:** Deep Facial Expression Recognition: A Survey
+
+**Autores:** Shan Li and Weihong Deng
+
+**Fonte:** IEEE Transactions on Affective Computing, vol. 13, no. 3, pp. 1195–1215, 2022 (publicado online 2020)
+
+**Link:** [DOI: 10.1109/TAFFC.2020.2981446](https://doi.org/10.1109/TAFFC.2020.2981446)
+
+**Resumo:** Survey abrangente de reconhecimento de expressão facial com deep learning: arquiteturas (CNN, GAN, attention), datasets (FER2013, AffectNet, RAF-DB), e desafios (oclusão, pose, viés). Contextualiza os baselines tradicionais contra os quais comparamos o LLM. Documenta que deep learning supervisionado é o estado da arte para FER — referência para posicionar nosso comparativo.
+
+**BibTeX:**
+```bibtex
+@article{Li2022DeepFER,
+  author  = {Li, Shan and Deng, Weihong},
+  title   = {Deep Facial Expression Recognition: A Survey},
+  journal = {IEEE Transactions on Affective Computing},
+  volume  = {13},
+  number  = {3},
+  pages   = {1195--1215},
+  year    = {2022},
+  doi     = {10.1109/TAFFC.2020.2981446}
+}
+```

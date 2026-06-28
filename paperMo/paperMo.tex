@@ -1,0 +1,512 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%2345678901234567890123456789012345678901234567890123456789012345678901234567890
+%        1         2         3         4         5         6         7         8
+
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out if you need a4paper
+
+%\documentclass[a4paper, 10pt, conference]{ieeeconf}      % Use this line for a4 paper
+
+\IEEEoverridecommandlockouts                              % This command is only needed if 
+                                                          % you want to use the \thanks command
+
+\overrideIEEEmargins                                      % Needed to meet printer requirements.
+
+%In case you encounter the following error:
+%Error 1010 The PDF file may be corrupt (unable to open PDF file) OR
+%Error 1000 An error occurred while parsing a contents stream. Unable to analyze the PDF file.
+%This is a known problem with pdfLaTeX conversion filter. The file cannot be opened with acrobat reader
+%Please use one of the alternatives below to circumvent this error by uncommenting one or the other
+%\pdfobjcompresslevel=0
+%\pdfminorversion=4
+
+% See the \addtolength command later in the file to balance the column lengths
+% on the last page of the document
+
+% The following packages can be found on http:\\www.ctan.org
+\usepackage{graphics} % for pdf, bitmapped graphics files
+\usepackage{epsfig} % for postscript graphics files
+\usepackage{mathptmx} % assumes new font selection scheme installed
+\usepackage{times} % assumes new font selection scheme installed
+\usepackage{amsmath} % assumes amsmath package installed
+\usepackage{amssymb}  % assumes amsmath package installed
+\usepackage{float}
+\usepackage[compact]{titlesec}
+\usepackage{makecell}
+
+\title{\LARGE \bf
+Temporal Modeling of Facial Affective Dynamics for Complex Emotion Perception in Human–Robot Interaction}
+
+
+\author{
+Monique S. L. S. Tomaz$^{1}$, Alessandra Sciutti$^{2}$, Aislan Gabriel O. Souza$^{1}$, and Bruno J. T. Fernandes$^{1}$%
+\thanks{$^{1}$Polytechnic School of Pernambuco (Poli), University of Pernambuco (UPE), Rua Benfica, 455 - Madalena, Recife, Pernambuco, Brazil. Correspondent Author: mslst@ecomp.poli.br}%
+\thanks{$^{2}$Istituto Italiano di Tecnologia, Via Enrico Melen 83, Building B, 16152 Genova, Italy}%
+}
+
+
+\begin{document}
+
+
+
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+
+\title{Temporal Modeling of Facial Affective Dynamics for Complex Emotion Perception in Human–Robot Interaction\\
+
+\thanks{Identify applicable funding agency here. If none, delete this.}
+}
+
+\author{\IEEEauthorblockN{1\textsuperscript{st} Monique S. L. S. Tomaz}
+\IEEEauthorblockA{\textit{Polytechnic School of Pernambuco (Poli)} \\
+\textit{University of Pernambuco (UPE)}\\
+Recife, Brazil \\
+0000-0002-5234-6789}
+\and
+\IEEEauthorblockN{2\textsuperscript{nd} Alessandra Sciutti}
+\IEEEauthorblockA{\textit{Istituto Italiano di Tecnologia} \\
+Genova, Italy \\
+0000-0002-1056-3398}
+\and
+\IEEEauthorblockN{4\textsuperscript{th} Aislan Gabriel O. Souza}
+\IEEEauthorblockA{\textit{Polytechnic School of Pernambuco (Poli)} \\
+\textit{University of Pernambuco (UPE)}\\
+Recife, Brazil \\
+0009-0008-9584-8472}
+\and
+\IEEEauthorblockN{5\textsuperscript{th} Bruno J. T. Fernandes }
+\IEEEauthorblockA{\textit{Polytechnic School of Pernambuco (Poli)} \\
+\textit{University of Pernambuco (UPE)}\\
+Recife, Brazil \\
+0000-0002-6001-3925}}
+
+\maketitle
+
+\begin{abstract}
+In natural social interaction, emotions manifest as brief, low-intensity facial muscle activations that robotic systems must interpret under varying perceptual conditions. This challenge becomes more difficult when dealing with complex emotional states, since they are not manifested in stable facial patterns but in subtle variations over time. This work proposes a computational architecture for temporal modeling of facial dynamics to assist in inferring complex emotions in Human-Robot Interaction (HRI). The system processes continuous streams of facial video and represents muscle activity using blendshape coefficients. These signals are mapped onto a Valence–Arousal dimensional representation derived from facial activity, and their temporal integration allows the inference of complex emotional states such as stress, anxiety, deep sadness, and apathy. The proposed architecture was designed to operate on both robotic platforms and standard visual acquisition configurations. The experimental evaluation focuses on the perceptual component under real-time conditions, demonstrating that the architecture produces consistent affective estimates in uncontrolled environments. These results provide initial evidence of the approach's viability and establish a basis for validation in human-robot interaction scenarios.
+\end{abstract}
+
+\bigskip
+\noindent\textbf{Keywords:}
+Human–Robot Interaction, Facial Dynamics, Complex Emotion Recognition, Valence–Arousal Modeling, Social Robotics.
+
+
+\section{Introduction}
+Emotional processes play a central role in perception, decision-making, and adaptive behavior in both biological and artificial systems \cite{Damasio1994Descartes, Posner2005Circumplex}. Rather than static reactions, emotions emerge as continuous processes shaped by neural, physiological, and behavioral dynamics \cite{Scherer2005Emotion}. Modeling and interpreting human affect is therefore essential for enabling natural and socially acceptable interaction \cite{Afzal2023AffectiveComputing}.
+
+Recognizing complex emotions, understood as context-dependent affective states that evolve, involving the interaction of physiological responses, expressive behavior, and cognitive appraisal \cite{Scherer2005Emotion}, becomes particularly challenging, since basic emotional categories or static representations do not adequately describe these emotions and frequently exhibit incongruities between modalities, reflecting non-synchronous relationships between observable behavior and underlying physiological processes \cite{jaiswal2019multimodal}. Conditions such as stress, anxiety, apathy, and deep sadness tend to manifest as dissociations between expressive behavior and physiological activation, making them difficult to detect in real-world scenarios.
+
+This temporal perspective becomes particularly relevant in Human–Robot Interaction scenarios, where robots must interpret affective signals under challenging perceptual conditions, including sensor noise, head movements, illumination variations, and changes in viewpoint. For social robots, this requires interpreting multiple human behavioral signals, such as facial expressions, speech patterns, and physiological responses \cite{Gunes2023AffectiveHRI}.
+
+In this context, analyzing facial expressions through the observation of facial muscle dynamics has become an effective approach to inferring affect. Parametric facial representations based on blendshape coefficients provide a compact description of facial deformations associated with expressive activity. In this work, we adopt the standard set of 52 blendshapes defined in the ARKit facial tracking framework, which provides a consistent parametric representation of facial motion. These representations enable continuous, quantitative characterization of facial activity, allowing emotional expression to be modeled as a dynamic process evolving.
+
+This work proposes a computational architecture for complex emotion perception in Human–Robot Interaction grounded in the temporal modeling of facial affective dynamics. The system processes a continuous stream of facial video acquired by the iCub humanoid robot's eye camera \cite{Metta2010iCub}, extracts blendshape activations using the MediaPipe Face Landmarker, and maps these signals to a continuous Valence–Arousal representation via the structured aggregation of facial activity patterns. By combining dimensional affect modeling with temporal descriptors of facial muscle dynamics, the proposed architecture enables the inference of complex affective states such as stress, anxiety, deep sadness, and apathy during human–robot interaction.
+
+The structure of this study is as follows: Section 2 presents the theoretical background and related work on affect perception, facial expression analysis, and emotion perception in human–robot interaction, highlighting the challenges of modeling affective dynamics from facial activity. Section 3 presents the proposed computational architecture for temporal modeling of facial affective dynamics and the mathematical formulation for estimating affective states from facial signals. Section 4 presents and discusses the experimental results. Finally, Section 5 summarizes the main contributions and outlines directions for future research.
+
+
+\section{Background}
+
+Affective computing studies the modeling, recognition, and interpretation of emotional states in computational systems, with applications in human-machine and human-robot interaction \cite{Picard1997, Calvo2010Affective, Afzal2023AffectiveComputing}. These states are expressed through multiple modalities, for example, facial expressions, vocal patterns, and linguistic content, which evolve continuously over time. This multimodal and dynamic nature makes the computational modeling of affective behavior inherently challenging \cite{Zeng2009Survey, Calvo2010Affective}.
+
+Among observable behavioral signals, facial expressions constitute one of the most widely investigated sources of affective information in human communication. Psychological studies demonstrated that observable facial movements generate characteristic expressive patterns associated with emotional states \cite{Ekman1978, Ekman1992}. These findings subsequently supported the development of computational approaches that analyze facial behavior to study affective processes \cite{Pantic2007, Zeng2009Survey, Calvo2010Affective}. During social interaction, facial activity can reflect variations in emotional intensity as well as subtle expressive changes that contribute to the perception of internal affective states \cite{Scherer2005Emotion}.
+
+From a computational perspective, representing facial movement is a fundamental step in analyzing expressive dynamics. Early approaches relied on geometric descriptors derived from facial landmarks or facial action units to characterize facial activity \cite{Bartlett2006, Fasel2003,Pantic2007}. More recent work has explored blendshape-based models, which provide compact descriptions of localized facial deformations and allow facial activity to be modeled as a continuous signal that evolves over time \cite{Cao2014FaceWarehouse, Li2017RealtimeFace}. This temporal perspective becomes particularly relevant because emotional expressions rarely appear as static configurations but emerge through gradual variations in facial activity.
+
+In natural interaction, many affective conditions correspond to complex emotional states, such as stress, anxiety, apathy, or deep sadness, whose facial manifestations tend to be subtle and heterogeneous when compared to basic emotions \cite{Calvo2010Affective, Scherer2005Emotion}. Capturing this dynamic therefore requires computational approaches capable of integrating facial activity over time. These challenges become relevant in human--robot interaction scenarios, where robots must perceive affective cues from visual observations obtained under varying perceptual conditions, including changes in illumination, viewpoint, and head movement \cite{Castellano2009, Gunes2010Survey}.
+
+
+\section{Proposed Method}
+
+This work proposes a computational architecture for the perception of affects from facial dynamics in human-robot interaction (HRI). The system processes a continuous stream of facial video and extracts blendshape activations that represent instantaneous movements of facial muscles. These signals are mapped onto a continuous valence-excitation representation and analyzed over time to infer complex emotional states. In this formulation, emotions are modeled as dynamic affective processes that emerge from temporal facial activity.
+
+Figure ~\ref{fig:affective_pipeline} shows the proposed pipeline for affective facial perception. A real-time RGB facial video stream is acquired from the robot's eye camera via the YARP communication interface, where each frame $I_t \in {R}^{H \times W \times 3}$ is processed sequentially at approximately 30 frames per second. In the \textit{Format Adaptation} module, format adaptation is performed to ensure compatibility among the libraries (YARP, OpenCV, and MediaPipe), involving only color space conversions.
+
+
+\begin{figure*}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{fig29.png}
+\caption{Facial Affect Inference Pipeline for HRI. Source: Own authorship.}
+\label{fig:affective_pipeline}
+\end{figure*}
+
+In the \textit{Face Detection} module, the MediaPipe Face Landmarker model simultaneously performs face detection and blendshape coefficient estimation. When a face is successfully detected, the system produces an activation vector $\mathbf{b}_t$:
+\[
+\mathbf{b}_t = [b_t^{(1)}, b_t^{(2)}, \dots, b_t^{(52)}] \in \mathbb{R}^{52}.
+\]
+
+where \(b_t^{(k)}\) denotes the \(k\)-th blendshape activation \((k=1,\dots,52)\). The MediaPipe Face Landmarker generates facial blendshape coefficients according to the ARKit blendshape specification, an augmented reality framework developed by Apple that defines a standardized set of 52 facial blendshape activations representing specific facial muscle movements. Each blendshape coefficient is expressed as a scalar value in the range $[0,1]$, indicating the intensity of activation of the corresponding facial movement.
+
+From the 52 blendshape coefficients, a subset of 23 was selected based on its functional relevance to affective facial activity. These coefficients are grouped into four subsets representing affective cues: positive valence ($P$), negative valence or facial tension ($N$), high arousal ($H$), and low arousal ($L$). The blendshape coefficients and weights associated with each subset are summarized in Tables~\ref{tab:valence_subsets} and~\ref{tab:arousal_subsets}.
+
+\begin{table}[htbp]
+\caption{Blendshape subsets used for Valence}
+\label{tab:valence_subsets}
+\centering
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.05}
+\small
+\begin{tabular}{l l c}
+\hline
+\textbf{Subset} & \textbf{Blendshape Coefficient} & \textbf{Weight} \\
+\hline
+
+Positive cues & mouthSmileLeft  & 1.5 \\
+              & mouthSmileRight & 1.5 \\
+              & cheekSquintLeft & 0.8 \\
+              & cheekSquintRight& 0.8 \\
+              & eyeSquintLeft   & 0.6 \\
+              & eyeSquintRight  & 0.6 \\
+\hline
+
+Negative cues & mouthFrownLeft  & 1.5 \\
+              & mouthFrownRight & 1.5 \\
+              & browDownLeft    & 1.3 \\
+              & browDownRight   & 1.3 \\
+              & noseSneerLeft   & 1.0 \\
+              & noseSneerRight  & 1.0 \\
+              & mouthPressLeft  & 0.8 \\
+              & mouthPressRight & 0.8 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\caption{Blendshape subsets used for Arousal}
+\label{tab:arousal_subsets}
+\centering
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.05}
+\small
+\begin{tabular}{l l c}
+\hline
+\textbf{Subset} & \textbf{Blendshape Coefficient} & \textbf{Weight} \\
+\hline
+
+High activation & eyeWideLeft       & 1.5 \\
+                & eyeWideRight      & 1.5 \\
+                & browInnerUp       & 1.3 \\
+                & jawOpen           & 1.0 \\
+                & mouthStretchLeft  & 0.8 \\
+                & mouthStretchRight & 0.8 \\
+\hline
+
+Low activation  & eyeSquintLeft  & 1.2 \\
+                & eyeSquintRight & 1.2 \\
+                & mouthClose     & 0.8 \\
+\hline
+\end{tabular}
+\end{table}
+
+To account for subject-specific facial morphology, a neutral facial baseline is estimated from recent valid blendshape vectors. In the current implementation, this baseline is computed over a sliding window of up to 90 frames and maintained as a reference for expression-change analysis. It is not directly used in the Valence--Arousal estimation. A temporal buffer stores valid blendshape vectors and, after a minimum accumulation of 30 frames, the baseline is calculated as a moving average:
+
+\begin{equation}
+\mathbf{b}_{\text{neutral}}(t) =
+\frac{1}{N}\sum_{k=1}^{N}\mathbf{b}_k,
+\quad 30 < N \leq 90
+\end{equation}
+
+where $N$ represents the number of valid samples currently stored in the buffer, this vector is continuously updated using a sliding window limited to the 90 most recent frames. The \textit{Dimensional Affect Estimation} module maps instantaneous facial activity into a continuous Valence--Arousal representation. The per-frame blendshape vector $\mathbf{b}_t$ is projected onto the affective pair $(V_t, A_t)$ through rule-based aggregation of functionally related facial activations. For each subset $S$, the weighted average activation at time $t$ is calculated as:
+
+\begin{equation}
+\bar{S}_t =
+\frac{1}{|S|}
+\sum_{k \in S} w_k\, b_{t,k},
+\end{equation}
+
+where $w_k$ is the scalar weight assigned to coefficient $k$ and $b_{t,k}$ is the activation of coefficient $k$ at time $t$. Valence is modeled as the difference between the subset of activations associated with positive facial patterns $P$ and the subset associated with facial tension patterns $N$, followed by a gain factor and limitation to the normalized affective domain:
+
+\begin{equation}
+V_t =
+{clip}\big(
+\gamma_V(\bar{P}_t-\bar{N}_t),
+-1,1
+\big),
+\end{equation}
+
+where $\gamma_V$ is a scaling coefficient and ${clip}(\cdot)$ restricts the value to the interval $[-1,1]$. Arousal is obtained by contrasting high-activation cues $H$ with low-activation cues $L$:
+
+\begin{equation}
+A_t =
+{clip}\big(
+\gamma_A(\bar{H}_t-\lambda_L\bar{L}_t),
+-1,1
+\big),
+\end{equation}
+
+where $\gamma_A$ controls the overall gain and $\lambda_L$ attenuates the contribution of low-activation cues. In the current implementation, the adopted values are $\gamma_V=\gamma_A=2.5$ and $\lambda_L=0.6$.
+
+Considering that ARKit blendshape activations generally fall within a range of $0.0$--$0.05$ correspond to neutral states, $0.05$--$0.2$ to mild activations, $0.2$--$0.4$ to clear facial movements, and values above $0.7$ are uncommon. Accordingly, the gain $\gamma_V=\gamma_A=2.5$ expands typical activation differences (around $\sim0.4$) to approximately fill the normalized interval $[-1,1]$. As low-activation cues frequently appear in neutral expressions, their contribution to the activation contrast is reduced by $\lambda_L=0.6$, meaning they contribute about $60\%$ as much as the high-activation cues.
+
+Thus, for each valid frame, the system produces a normalized affective pair $(V_t, A_t)$ representing the instantaneous affective state inferred from facial activity. These variables are forwarded to the \emph{Complex Affective State} module, where frame-level affective estimates are buffered over a short temporal window. In this module, instantaneous affect is combined with short-term affective dynamics, modeled via the temporal derivative of arousal computed over a 0.5~s sliding window, together with an affective inconsistency indicator derived from facial affect dynamics.
+
+For each predefined complex affective state (stress, anxiety, deep sadness, and apathy), a temporally based activation function is evaluated. A dominant state is reported only when its activation exceeds a fixed threshold ($0.40$), resulting in a confidence score in the interval $[0,1]$. The mathematical formulation of this stage is presented in the following subsection.
+
+The pipeline generates four outputs at different levels. It provides the Top-$N$ facial blendshape activations per frame, describing instantaneous facial muscle activity. It also produces the continuous Valence-Arousal $(V_t, A_t)$, which constitutes the primary affective state of the system. It provides the dominant complex affective state and an annotated facial image with reference points for visualization.
+
+\subsubsection{Mathematical Modeling of Emotional States}
+
+This study employs a continuous formulation to model complex emotions, consistent with regression-based approaches for dimensional estimation of affect \cite{kachele2014fusion, goncalves2024odyssey}. The adopted framework is based on Russell's circumplex model \cite{kim2018building}, which represents emotions within a two-dimensional affective space defined by Valence and Activation. Such dimensional representations allow for continuous estimation and temporal modeling of affective variations, making them suitable for real-time computational analysis. Thus, the affective space is defined as a bounded Valence-Activation domain:
+
+\begin{equation}
+{E} \;=\; \bigl\{ (V_t, A_t) \;\big|\; V_t, A_t \in [-1, 1] \bigr\},
+\end{equation}
+
+where:
+
+\begin{itemize}
+    \item[(i)] $V_t$ represents valence, ranging from pleasure $(+1)$ to displeasure $(-1)$;
+    \item[(ii)] $A_t$ represents arousal, corresponding to the level of affective activation, ranging from low activation $(-1)$ to high activation $(+1)$.
+\end{itemize}
+
+In this formulation, $(V_t, A_t)$ are observable affective variables estimated from facial dynamics at each instant in time. These variables define the continuous affective state used as input for subsequent modeling of affective dynamics and complex emotional states. This representation is consistent with the circumplex model of affect and its computational use in large-scale datasets such as AffectNet \cite{mollahosseini2017affectnet} and Aff-Wild \cite{kollias2019deep}.
+
+
+\subsubsection{Transient Affective Dynamics and Temporal Derivatives}
+
+Modeling complex affective states requires capturing highly granular temporal dynamics. Unlike basic emotions, which can be represented by a static position in space $(V, A)$, complex emotions, characterized by abrupt affective changes, are better described by the temporal evolution of affective dimensions \cite{kuppens2010emotional, 911197}.
+
+This section formalizes the transient arousal-dynamics component $\dot{A}_t$, which captures affective phenomena whose manifestation depends primarily on the rate of affective change rather than on absolute arousal levels. Such transient responses emerge from rapid temporal variations in activation, with their affective meaning arising from the temporal evolution of facial expressive signals. To model such phenomena, a temporal derivative of the Arousal dimension is introduced:
+
+\begin{equation}
+\dot{A}_t = \frac{dA_t}{dt}.
+\end{equation}
+
+In practice, the derivative is approximated from frame-level activation estimates using a short sliding temporal window. The implemented estimator computes the mean absolute rate of change of arousal values across consecutive frames, defined as
+
+\begin{equation}
+\dot{A}_t \approx 
+\frac{1}{M}
+\sum_{m=1}^{M}
+\left|
+\frac{\Delta A_m}{\Delta t_m}
+\right|,
+\end{equation}
+
+where $M$ denotes the number of valid temporal differences within the window. This formulation captures the magnitude of short-term affective fluctuations derived directly from observable facial dynamics. The resulting temporal descriptor complements the static Valence-Activation representation, encoding dynamic variations in affect. Subsequently, it is combined with dimensional indicators of affect and affective inconsistency to support the modeling of complex emotions.
+
+\subsubsection{Dynamic Modeling of Complex Affective States}
+
+The modeling of complex affective states ($C_j$), such as \emph{Stress}, \emph{Anxiety}, \emph{Deep Sadness}, and \emph{Apathy}, builds upon the dynamic affective representation previously introduced, incorporating both dimensional and temporal information derived from $(V_t, A_t)$ and their evolution over time. Rather than treating these states as categorical outcomes or fixed regions in the affective space, they are characterized in this work by the joint presence of:
+
+\begin{itemize}
+\item persistent dimensional biases in Valence and Arousal,
+\item transient activation patterns reflecting short-term affective dynamics, and
+\item an internal affective inconsistency indicator derived from facial valence--arousal dynamics.
+\end{itemize}
+
+These properties motivate a formulation in which complex emotions are modeled as nonlinear functions of an extended affective feature space, combining dimensional, dynamic, and inconsistency-related components. The activation level of a complex affective state $C_j$ at time $t$ is defined as:
+
+\begin{equation}
+y_{C_j}(t) = \sigma\!\left(
+\alpha_j V_t + 
+\beta_j A_t +
+\gamma_j +
+\lambda_{j,I} I_t +
+\lambda_{j,D} \dot{A}_t
+\right),
+\end{equation}
+
+where $\sigma$ denotes the logistic activation function. The input vector is defined as:
+
+\begin{equation}
+\mathbf{X}_t = [V_t, A_t, I_t, \dot{A}_t].
+\end{equation}
+
+and the parameter set is given by:
+
+\begin{equation}
+\theta_j = \{\alpha_j, \beta_j, \gamma_j, \lambda_{j,I}, \lambda_{j,D}\}.
+\end{equation}
+
+where $\alpha_j$ and $\beta_j$ control the contribution of Valence and Arousal, $\gamma_j$ is a bias term, $\lambda_{j,I}$ weights the affective inconsistency component, and $\lambda_{j,D}$ weights the temporal dynamics term.
+
+\vspace{0.3em}
+\noindent
+\textbf{Component interpretation.}
+Each term in the pre-activation function plays a distinct and interpretable role:
+
+\begin{itemize}
+    \item \textbf{Dimensional component} $(\alpha_j V_t + \beta_j A_t + \gamma_j)$  encodes the static affective bias of the state in the Valence--Arousal plane. For instance, stress and anxiety are consistently associated with low Valence and high Arousal ($\alpha_j < 0$, $\beta_j > 0$) \cite{scherer2005emotions}. In the current implementation, each complex affective state is represented by a fixed-parameter configuration for real-time discrimination within the proposed model.
+
+    \item \textbf{Affective inconsistency term} $(\lambda_{j,I} I_t)$ captures irregularities in the affective trajectory. In the current implementation, this term is estimated from facial valence--arousal dynamics and their short-term temporal variation. When an external physiological arousal signal is available, the same term can be extended to represent cross-modal incongruence. The incongruence term is defined in the interval [0,1], where values close to 1 indicate high instability, values around 0.5 correspond to regular affective dynamics, and values close to 0 indicate stable behavior. It is computed from short-term variations in arousal, adjusted by predefined affective conditions. The temporal variation of arousal is estimated as:
+\begin{equation}
+D_t=\frac{1}{M}\sum_{m=1}^{M}\left|\frac{\Delta A_m}{\Delta t_m}\right|
+\end{equation}
+
+where \(D_t\) represents the average magnitude of short-term variations within a sliding window. The incongruence term \(I_t\) is then defined from \(D_t\), allowing the distinction between stable, dynamic, and unstable patterns.
+
+    \item \textbf{Temporal dynamics term} $(\lambda_{j,D} \dot{A}_t)$  captures rapid variations in activation, reflecting affective transients and abrupt physiological or expressive onsets. Temporal derivatives of arousal-related signals have been widely employed to detect surprise, acute anxiety, and stress peaks, where affective meaning arises from change rates rather than absolute activation levels \cite{kuppens2010emotional, cowie2011emotion, wang2024physioformer}.
+\end{itemize}
+
+The parameters are chosen to activate specific regions of the circumplex model. Stress and anxiety are associated with regions of low valence and high activation, deep sadness with low valence and low activation, and apathy with low activation and weak valence dependence. The relative magnitudes of the parameters $(\alpha_j, \beta_j)$ are defined to emphasize these regions, while $\gamma_j$ adjusts the activation threshold and $\lambda_{j,I}, \lambda_{j,D}$ control the sensitivity to dynamic and inconsistent affective patterns. The exact values of the fixed parameters adopted in the complex affective state model are presented in Table ~\ref{tab:fixed_params}.
+
+
+\begin{table}[htbp]
+\caption{Fixed parameter values used in the complex affective state model.}
+\label{tab:fixed_params}
+\centering
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.05}
+\small
+\begin{tabular}{l c c c c c}
+\hline
+\textbf{State} & $\alpha$ & $\beta$ & $\gamma$ & $\lambda_I$ & $\lambda_D$ \\
+\hline
+
+Stress & -0.7 & 0.8 & -0.2 & 0.9 & 0.3 \\
+Anxiety & -0.7 & 0.9 & -0.3 & 0.4 & 1.0 \\
+Deep Sadness & -0.9 & -0.4 & -0.4 & 0.3 & 0.1 \\
+Apathy & -0.15 & -0.85 & -0.12 & 0.10 & 0.05\\
+
+\hline
+\end{tabular}
+\end{table}
+
+At each time step, the formulation produces an activation value for each complex emotion, from which the dominant emotion is defined as the one with the highest activation. To ensure reliability, a fixed threshold ($0.40$) is applied an emotion is assigned only when its activation exceeds this value; otherwise, no emotion is assigned. Formally:
+
+\begin{equation}
+j(t) = \arg\max_j y_{C_j}(t)
+\end{equation}
+
+
+\section{Results and Discussion}
+
+This section presents the experimental evaluation of the proposed architecture, focusing on the recognition of complex emotional states. The analysis is based on Valence–Arousal estimation from temporal facial blendshape dynamics, combined with temporal variation and incongruence to characterize complex affective patterns. The evaluation is conducted in real time using event-based samples captured with a standard webcam, demonstrating the feasibility of the proposed approach in lightweight, accessible computational settings.Figure~\ref{fig:realtime_examples} presents representative examples of the system outputs during real-time execution, illustrating the facial landmark tracking and the input used for affective inference.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.3\textwidth]{fig20.png}
+\caption{Representative real-time outputs of the proposed system, showing facial landmark detection and tracking under natural conditions.}
+\label{fig:realtime_examples}
+\end{figure}
+
+To evaluate the behavior of the proposed architecture under real-time conditions, affective states inferred from facial dynamics were analyzed using a dataset of 102 event-based samples captured in a work-related context. Samples were recorded under natural and unconstrained conditions, reflecting real-world variability. Samples were triggered whenever the confidence of a complex emotional state exceeded a threshold of 0.40. Table~\ref{tab:descriptive_stats} presents the descriptive statistics of the extracted affective variables.
+
+
+\begin{table}[ht]
+\centering
+\caption{Descriptive statistics of affective variables extracted from real-time webcam data in a work-related context (N=102).}
+\label{tab:descriptive_stats}
+\footnotesize
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lccccccccc}
+\hline
+\textbf{Metric} & \textbf{Mean} & \textbf{Std} & \textbf{Median} & \textbf{Q1} & \textbf{Q3} & \textbf{Min} & \textbf{Max} \\
+\hline
+Valence & 0.0676 & 0.0297 & 0.0641 & 0.0503 & 0.0793 & -0.0143 & 0.1760 \\
+Arousal & 0.0837 & 0.0677 & 0.0911 & 0.0341 & 0.1247 & -0.1071 & 0.2239 \\
+$\Delta$ Arousal & 0.1014 & 0.0483 & 0.0878 & 0.0749 & 0.1252 & 0.0000 & 0.3263 \\
+Incongruence & 0.0507 & 0.0242 & 0.0439 & 0.0374 & 0.0626 & 0.0000 & 0.1632 \\
+Dominant Score & 0.4794 & 0.0137 & 0.4755 & 0.4700 & 0.4879 & 0.4553 & 0.5155 \\
+\hline
+\end{tabular}
+}
+\end{table}
+
+The results indicate that facially inferred valence and arousal remain within stable ranges, with moderate variability across samples. The mean values ($valence = 0.0676$, $arousal = 0.0837$) suggest that the observed affective states are predominantly concentrated in low to moderate activation regions, which aligns with non-extreme emotional manifestations typically observed in everyday working contexts. The average incongruence ($0.0507$) remains relatively low, indicating that most affective responses are internally consistent, while still allowing the identification of transient deviations associated with dynamic emotional changes.
+
+The observed distributions are consistent with the circumplex model of affect, in which emotional states are organized along the dimensions of valence and activation. In this space, stress is associated with high activation and low valence, while apathy occupies a region of low activation. Anxiety, in turn, appears in an intermediate region, reflecting its transitional nature. This organization can be observed in Figure~\ref{fig:va_distribution}, which illustrates the distribution of samples in the valence-arousal space.
+
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.4\textwidth]{VA_dist.png}
+\caption{Distribution of samples in the valence-arousal space.}
+\label{fig:va_distribution}
+\end{figure}
+
+The model captures consistent temporal affective patterns under real-world variability conditions. Beyond this spatial organization, it is also important to analyze the consistency between affective dimensions. Figure~\ref{fig:incongruence_distribution} shows the distribution of incongruence across samples.
+
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.4\textwidth]{dist_inco.png}
+\caption{Distribution of incongruence values among the samples.}
+\label{fig:incongruence_distribution}
+\end{figure}
+
+
+Most samples exhibit low to moderate incongruence, indicating consistent evolution between valence and arousal. Higher values correspond to transient mismatches between affective dimensions, captured through the proposed incongruence formulation. 
+
+\subsubsection{Ablation Study: Machine Learning-Based Parameter Calibration}
+
+An ablation study was conducted to evaluate the sensitivity of the model to parameter estimation. In this approach, logistic regression models are used exclusively to learn the parameters involved in the computation of complex emotions, replacing the previously defined fixed values.
+
+The logistic regression model was trained to replace the manually defined parameters of the model, namely $\alpha$, $\beta$, $\lambda_I$, $\lambda_D$, and $\gamma$. The model structure remained unchanged, allowing direct comparison between learned and manually defined parameters.
+
+Using the same dataset, the descriptive statistics obtained with the learned parameters are presented in Table~\ref{tab:ml_descriptive_stats}, enabling a direct comparison with the previous configuration.
+
+\begin{table}[ht]
+\centering
+\caption{Descriptive statistics of affective variables under machine learning-based parameter calibration (N=102).}
+\label{tab:ml_descriptive_stats}
+\footnotesize
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lccccccccc}
+\hline
+\textbf{Metric} & \textbf{Mean} & \textbf{Std} & \textbf{Median} & \textbf{Q1} & \textbf{Q3} & \textbf{Min} & \textbf{Max} \\
+\hline
+Valence & 0.0811 & 0.0782 & 0.0622 & 0.0471 & 0.0800 & -0.0117 & 0.3836 \\
+Arousal & 0.0739 & 0.1052 & 0.0672 & 0.0352 & 0.1327 & -0.2355 & 0.4446 \\
+$\Delta$ Arousal & 0.1743 & 0.0834 & 0.1804 & 0.1078 & 0.2281 & 0.0000 & 0.3510 \\
+Incongruence & 0.0872 & 0.0417 & 0.0902 & 0.0539 & 0.1140 & 0.0000 & 0.1755 \\
+Dominant Score & 0.4946 & 0.0242 & 0.4864 & 0.4755 & 0.5127 & 0.4621 & 0.5666 \\
+\hline
+\end{tabular}
+}
+\end{table}
+
+The learned parameters increase variability, particularly in arousal, resulting in higher dispersion across affective dimensions. This effect propagates to incongruence, indicating increased sensitivity to temporal mismatches between components. This change propagates to the incongruence values, whose mean increases while remaining mostly within low to moderate levels (Figure~\ref{fig:incongruence_distribution_ml}), indicating greater sensitivity to variations between affective components.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.4\textwidth]{VA_ml.png}
+\caption{Distribution of samples in the valence-arousal space under machine learning-based parameter calibration.}
+\label{fig:va_distribution_ml}
+\end{figure}
+
+This behavior is also reflected in the valence-arousal space (Figure~\ref{fig:va_distribution_ml}), where the overall structure is preserved, but with a wider spread of samples, especially along the arousal axis. 
+
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.4\textwidth]{incog_ml.png}
+\caption{Distribution of incongruence values under machine learning-based parameter calibration.}
+\label{fig:incongruence_distribution_ml}
+\end{figure}
+
+
+The results demonstrate that the proposed formulation captures consistent affective dynamics and temporal variations in real time. Although limitations remain in recognizing complex emotions in unimodal settings, the observed behavior is consistent with known challenges in affective computing. Comparison with machine learning-based calibration shows that the formulation preserves its structural behavior across different parameter estimation strategies, maintaining interpretability. These results corroborate the proposed modeling approach and allow its extension to multimodal integrations.
+
+The comparison with the machine learning-based parameter calibration shows that, although the learned parameters introduce higher variability, the overall behavior of the model remains consistent. This indicates that the proposed formulation preserves its structure independently of the parameter estimation strategy, while maintaining interpretability.
+
+
+
+\section{Conclusion}
+
+This work presents a computational architecture for recognizing complex emotions by modeling the temporal dynamics of facial expressions in human-robot interaction scenarios. The proposed formulation integrates continuous valence-activation estimation with explicit temporal descriptors, including short-term dynamics and an incongruence indicator, allowing the inference of complex affective states, such as stress, anxiety, deep sadness, and apathy, from facial signals.
+
+Unlike static or purely categorical approaches, the proposed model is structured around a mathematically defined activation function that integrates affective dimensions, temporal variation, and signal inconsistency into a unified inference mechanism. This formulation allows the system to capture not only instantaneous affective states but also their temporal evolution, which is essential for representing complex emotional phenomena.
+
+An experimental analysis, based on samples collected in real time via webcam, demonstrates that the model produces consistent affective patterns aligned with its theoretical design. In particular, states of high arousal, such as stress, emerge as dominant under conditions of greater temporal variability. In contrast, states of low arousal are associated with stable, less dynamic facial behaviors.
+
+Furthermore, the comparison between rule-based and machine-learning parameterizations shows that the proposed formulation maintains its structural behavior across different estimation strategies. This indicates that the main contribution lies in the underlying mathematical structure governing the interaction between affective dimensions and temporal dynamics, preserving interpretability.
+
+Overall, the results indicate that the proposed formulation provides a coherent basis for temporal emotion modeling, supporting its extension to multimodal integration and more complex interaction scenarios.
+
+
+\section*{Acknowledgment}
+
+This study was partially financed by the Coordenação de Aperfeiçoamento de Pessoal de Nível Superior – Brasil (CAPES) – Finance Code 001, Fundação de Amparo à Ciência e Tecnologia do Estado de Pernambuco (FACEPE), and the Conselho Nacional de Desenvolvimento Científico e Tecnológico (CNPq) – Brazilian agencies. This research was also supported by the Istituto Italiano di Tecnologia (IIT), Genoa, Italy, where part of the work was conducted.
+
+
+
+\bibliographystyle{IEEEtran}
+\bibliography{bib}
+
+
+
+
+\end{document}

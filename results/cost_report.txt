@@ -1,0 +1,96 @@
+================================================================================
+COMPUTATIONAL COST AND LATENCY REPORT
+================================================================================
+
+--------------------------------------------------------------------------------
+1. MODEL ARCHITECTURE
+--------------------------------------------------------------------------------
+  model_name                         : Gemma 4 26B-A4B-it
+  model_id                           : cyankiwi/gemma-4-26B-A4B-it-AWQ-4bit
+  architecture                       : Mixture-of-Experts (MoE)
+  total_params_B                     : 25.2
+  active_params_B                    : 3.8
+  layers                             : 30
+  experts_total                      : 128
+  experts_active                     : 8
+  experts_shared                     : 1
+  context_length                     : 262144
+  vocab_size                         : 262144
+  vision_encoder_params_M            : 550
+  quantization                       : AWQ 4-bit (weight-only)
+  memory_footprint_GB                : 13.5
+  serving_engine                     : vLLM (PagedAttention)
+  gpu                                : NVIDIA L4 24 GB (GCP Spot VM)
+  gpu_memory_GB                      : 24
+  gpu_compute_tflops_fp16            : 121
+  temperature                        : 0
+  max_tokens                         : 512
+
+--------------------------------------------------------------------------------
+2. TOKEN ESTIMATES PER CONDITION
+--------------------------------------------------------------------------------
+  Condition                         Input   Output    Total  Description
+  ------------------------------ -------- -------- --------  ----------------------------------------
+  OMG C2 zero-shot                    540       30      570  System + 15 blendshapes (mean/max/std) + legend
+  OMG C2 few-shot (k=3)              1500       30     1530  System + 3 few-shot pairs + blendshapes + legend
+  OMG C3 zero-shot                   3820       30     3850  System + 3 JPEG keyframes (~1200 tokens each via vision encoder)
+  MOSEI C1 zero-shot                  310       80      390  System + transcript (~50-80 words)
+  MOSEI C1 few-shot (k=5)            1310       80     1390  System + 5 few-shot pairs + transcript
+  MOSEI C2 zero-shot                  510       80      590  System + 15 FACET features + legend
+  MOSEI C2 few-shot (k=5)            1910       80     1990  System + 5 few-shot pairs + FACET + legend
+
+--------------------------------------------------------------------------------
+3. MEASURED INFERENCE LATENCY (from parquet files)
+--------------------------------------------------------------------------------
+  Condition                          N      Mean    Median       Std        P5       P95      Total
+  ------------------------------ ----- --------- --------- --------- --------- --------- ----------
+  OMG C2 (blendshapes)             240     1035ms      918ms      517ms      903ms     1609ms     248.5s
+  OMG C3 (vision)                  240     4553ms     2387ms     4560ms     1532ms    15635ms    1092.7s
+  MOSEI C1 (text)                  400     1828ms     1817ms      113ms     1730ms     1923ms     731.1s
+  MOSEI C2 (FACET)                 400     1872ms     1860ms       74ms     1798ms     1954ms     748.7s
+
+--------------------------------------------------------------------------------
+4. THROUGHPUT AND TOTAL EXPERIMENT TIME
+--------------------------------------------------------------------------------
+  Total LLM API calls:          1,280
+  Total LLM inference time:      2,821s (47.0 min)
+  Average throughput:             0.45 calls/s
+  Average latency (all):          2204ms/call
+  OMG C2 (blendshapes)          : ~570 tokens/call, ~551 tokens/s effective
+  OMG C3 (vision)               : ~3850 tokens/call, ~846 tokens/s effective
+  MOSEI C1 (text)               : ~390 tokens/call, ~213 tokens/s effective
+  MOSEI C2 (FACET)              : ~590 tokens/call, ~315 tokens/s effective
+
+--------------------------------------------------------------------------------
+5. INFRASTRUCTURE COST ESTIMATE
+--------------------------------------------------------------------------------
+  GPU:                            NVIDIA L4 24 GB
+  GCP Spot VM price (approx):     $0.24/hr
+  Total GPU time (LLM only):      47.0 min
+  Estimated GPU cost (LLM only):  $0.188
+  Note: excludes feature extraction (MediaPipe), data loading, and idle time
+
+--------------------------------------------------------------------------------
+6. COMPARISON: LLM vs BASELINE COMPUTATIONAL REQUIREMENTS
+--------------------------------------------------------------------------------
+  Metric                                     LLM (Gemma 4)   Baseline (Rules/LogReg)
+  ----------------------------------- -------------------- -------------------------
+  GPU required                              Yes (L4 24 GB)             No (CPU only)
+  Model memory                        ~13.5 GB (AWQ 4-bit)                    < 1 MB
+  Active parameters                        3.8 B per token     < 1 K (rules/weights)
+  Latency per sample (text C1)                   ~1,828 ms                    < 1 ms
+  Latency per sample (vision C3)                 ~4,553 ms        ~15 ms (MediaPipe)
+  Latency per sample (features C2)               ~1,035 ms                    < 1 ms
+  Real-time capable (30 fps)                            No                       Yes
+  Requires internet/API                 Yes (or local GPU)                        No
+  Energy per inference (est.)                  ~0.3–1.5 Wh                 ~0.001 Wh
+
+--------------------------------------------------------------------------------
+7. VISION CONDITION (C3) — IMAGE PROCESSING DETAIL
+--------------------------------------------------------------------------------
+  Images per window:              3 JPEG keyframes (4s window)
+  Typical image size:             ~30–60 KB per JPEG (640px crop)
+  Vision encoder:                 SigLIP (~550M params, frozen)
+  Est. vision tokens per image:   ~1,200 tokens
+  Est. total visual tokens:       ~3,600 tokens (3 images)
+  This explains the 4.4x latency increase vs text-only conditions

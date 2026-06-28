@@ -1,50 +1,183 @@
 ======================================================================
-TESTES ESTATÍSTICOS — OMG-Empathy (CCC por vídeo, n=15)
+A. PAIRWISE WILCOXON — OMG-Empathy (CCC per video, n=15)
 ======================================================================
 
---- C3 (visão) vs Baseline ---
-  Δ média  = +0.0099 ± 0.1433
+--- C3 (vision) vs Baseline ---
+  Mean diff = +0.0099 +/- 0.1433
   Wilcoxon signed-rank: W=45.0, p=0.4212
-  Cohen's d (pareado)  = +0.069
-  → Não significativo (p ≥ 0.05)
+  Cohen's d (paired)   = +0.069
+  -> Not significant (p >= 0.05)
 
---- C3 (visão) vs C2 zero-shot ---
-  Δ média  = +0.0678 ± 0.1193
+--- C3 (vision) vs C2 zero-shot ---
+  Mean diff = +0.0678 +/- 0.1193
   Wilcoxon signed-rank: W=30.0, p=0.0946
-  Cohen's d (pareado)  = +0.568
-  → Não significativo (p ≥ 0.05)
+  Cohen's d (paired)   = +0.568
+  -> Not significant (p >= 0.05)
 
 --- C2 few-shot vs C2 zero-shot ---
-  Δ média  = +0.0377 ± 0.0747
+  Mean diff = +0.0377 +/- 0.0747
   Wilcoxon signed-rank: W=32.0, p=0.1205
-  Cohen's d (pareado)  = +0.505
-  → Não significativo (p ≥ 0.05)
+  Cohen's d (paired)   = +0.505
+  -> Not significant (p >= 0.05)
 
 --- C2 few-shot vs Baseline ---
-  Δ média  = -0.0202 ± 0.0683
+  Mean diff = -0.0202 +/- 0.0683
   Wilcoxon signed-rank: W=38.0, p=0.2293
-  Cohen's d (pareado)  = -0.296
-  → Não significativo (p ≥ 0.05)
+  Cohen's d (paired)   = -0.296
+  -> Not significant (p >= 0.05)
 
 --- Baseline vs C2 zero-shot ---
-  Δ média  = +0.0579 ± 0.0906
+  Mean diff = +0.0579 +/- 0.0906
   Wilcoxon signed-rank: W=17.0, p=0.0125
-  Cohen's d (pareado)  = +0.640
-  → SIGNIFICATIVO (p < 0.05)
+  Cohen's d (paired)   = +0.640
+  -> SIGNIFICANT (p < 0.05)
+
 
 ======================================================================
-BOOTSTRAP CI 95% — CCC médio por condição (10.000 reamostragens)
+B. FRIEDMAN TEST — OMG-Empathy (omnibus, 4 conditions × 15 videos)
 ======================================================================
-  C2 zero-shot             : média=+0.090  IC95%=[+0.007, +0.176]
-  C2 few-shot k=3          : média=+0.127  IC95%=[+0.046, +0.213]
-  C3 visão zero-shot       : média=+0.158  IC95%=[+0.085, +0.230]
-  Baseline regras          : média=+0.148  IC95%=[+0.044, +0.259]
+  Conditions (k):       4
+  Blocks (n videos):    15
+  Friedman chi²:        10.040
+  p-value:              0.0182
+  Kendall's W:          0.223
+  -> SIGNIFICANT (p < 0.05): at least one condition differs
+
+  Post-hoc: pairwise Wilcoxon with Holm-Bonferroni correction
+    C2 zero-shot vs Baseline (rules)          p_raw=0.0125  p_adj(Holm)=0.0747  ns
+    C2 zero-shot vs C3 vision                 p_raw=0.0946  p_adj(Holm)=0.4730  ns
+    C2 zero-shot vs C2 few-shot (k=3)         p_raw=0.1205  p_adj(Holm)=0.4822  ns
+    C2 few-shot (k=3) vs Baseline (rules)     p_raw=0.2293  p_adj(Holm)=0.6879  ns
+    C3 vision vs Baseline (rules)             p_raw=0.4212  p_adj(Holm)=0.8424  ns
+    C2 few-shot (k=3) vs C3 vision            p_raw=0.5245  p_adj(Holm)=0.5245  ns
+
+  Mean ranks (higher = better CCC):
+    C2 zero-shot             : 3.20
+    C2 few-shot (k=3)        : 2.80
+    C3 vision                : 1.87
+    Baseline (rules)         : 2.13
+
 
 ======================================================================
-EFFECT SIZE — Cohen's d pareado (> 0 = 1º melhor que 2º)
+C. BOOTSTRAP 95% CI — OMG Mean CCC (10,000 resamples)
 ======================================================================
-  C3 (visão) vs Baseline                  : d=+0.069 (pequeno)
-  C3 (visão) vs C2 zero-shot              : d=+0.568 (médio)
-  C2 few-shot vs C2 zero-shot             : d=+0.505 (médio)
-  C2 few-shot vs Baseline                 : d=-0.296 (pequeno)
-  Baseline vs C2 zero-shot                : d=+0.640 (médio)
+  C2 zero-shot             : mean=+0.090  95%CI=[+0.007, +0.176]
+  C2 few-shot (k=3)        : mean=+0.127  95%CI=[+0.046, +0.213]
+  C3 vision                : mean=+0.158  95%CI=[+0.085, +0.230]
+  Baseline (rules)         : mean=+0.148  95%CI=[+0.044, +0.259]
+
+
+======================================================================
+D. EFFECT SIZE — OMG Paired Cohen's d
+======================================================================
+  C3 (vision) vs Baseline                 : d=+0.069 (small)
+  C3 (vision) vs C2 zero-shot             : d=+0.568 (medium)
+  C2 few-shot vs C2 zero-shot             : d=+0.505 (medium)
+  C2 few-shot vs Baseline                 : d=-0.296 (small)
+  Baseline vs C2 zero-shot                : d=+0.640 (medium)
+
+
+======================================================================
+E. MOSEI — Per-sample Statistics (C1 text vs C2 FACET, n=400)
+======================================================================
+
+  --- Per-sample F1 (paired) ---
+  C1 (text)   mean F1: 0.4602 ± 0.4291
+  C2 (FACET)  mean F1: 0.3288 ± 0.4285
+  Mean diff (C1 - C2): +0.1314 ± 0.5407
+  Wilcoxon signed-rank: W=7049.0, p=0.000046
+  Cohen's d (paired):  +0.243 (small)
+  -> SIGNIFICANT (p < 0.05)
+
+  --- McNemar's test (exact set match) ---
+  Contingency: both_right=59, both_wrong=254, C1_only=52, C2_only=35
+  McNemar (chi² with continuity correction): χ²=2.943, p=0.086276
+  -> Not significant (p >= 0.05)
+
+  --- Bootstrap 95% CI for mean F1 difference (C1 - C2) ---
+  Mean diff: +0.1314  95%CI=[+0.0793, +0.1849]
+  CI excludes zero -> C1 significantly better than C2
+
+
+======================================================================
+F. MOSEI — Bootstrap 95% CI per condition (per-sample F1)
+======================================================================
+  C1 (text)           : mean=0.4602  95%CI=[0.4183, 0.5024]
+  C2 (FACET)          : mean=0.3288  95%CI=[0.2869, 0.3709]
+
+
+======================================================================
+G. LATENCY — Kruskal-Wallis (4 conditions) + Dunn post-hoc
+======================================================================
+  OMG C2 (blendshapes)     : n= 240  mean=    1035ms  median=     918ms  std=     516ms
+  OMG C3 (vision)          : n= 240  mean=    4553ms  median=    2387ms  std=    4551ms
+  MOSEI C1 (text)          : n= 400  mean=    1828ms  median=    1817ms  std=     113ms
+  MOSEI C2 (FACET)         : n= 400  mean=    1872ms  median=    1860ms  std=      73ms
+
+  Kruskal-Wallis H = 621.957, p = 1.75e-134
+  Effect size (eta² approx): 0.4851
+  -> SIGNIFICANT (p < 0.05): at least one condition's latency differs
+
+  Dunn post-hoc (Bonferroni correction):
+    OMG C2 (blendshapes)      vs OMG C3 (vision)            p=2.3759e-106  **
+    OMG C2 (blendshapes)      vs MOSEI C1 (text)            p=1.7497e-47  **
+    OMG C2 (blendshapes)      vs MOSEI C2 (FACET)           p=1.8399e-104  **
+    OMG C3 (vision)           vs MOSEI C1 (text)            p=1.0838e-22  **
+    OMG C3 (vision)           vs MOSEI C2 (FACET)           p=3.1298e-02  **
+    MOSEI C1 (text)           vs MOSEI C2 (FACET)           p=6.1394e-16  **
+
+
+======================================================================
+H. MOSEI — Kruskal-Wallis (4 systems, per-sample F1)
+======================================================================
+
+  Majority baseline predicts: {happiness}
+  Emotion base rates: {'happiness': '0.477', 'sadness': '0.255', 'anger': '0.260', 'fear': '0.055', 'disgust': '0.275', 'surprise': '0.117'}
+  Random Chance            : mean F1 = 0.2766 ± 0.0940
+  Majority                 : mean F1 = 0.3947 ± 0.4367
+  LLM C1 (text)            : mean F1 = 0.4602 ± 0.4291
+  LLM C2 (FACET)           : mean F1 = 0.3288 ± 0.4285
+
+  Kruskal-Wallis H = 29.181, p = 2.05e-06
+  Effect size (eta² approx): 0.0164
+  -> SIGNIFICANT (p < 0.05): at least one system differs
+
+  Dunn post-hoc (Bonferroni correction):
+    Random Chance             vs Majority                   p=1.0000e+00  ns
+    Random Chance             vs LLM C1 (text)              p=7.4118e-01  ns
+    Random Chance             vs LLM C2 (FACET)             p=1.3309e-03  **
+    Majority                  vs LLM C1 (text)              p=4.5695e-02  **
+    Majority                  vs LLM C2 (FACET)             p=6.2037e-02  ns
+    LLM C1 (text)             vs LLM C2 (FACET)             p=1.0012e-06  **
+
+
+======================================================================
+I. MOSEI — Bootstrap 95% CI per Emotion F1 (LLM C1 vs Baseline LogReg)
+======================================================================
+
+  Happiness   :
+    LLM C1   F1=0.571  95%CI=[0.502, 0.634]  support=191 positive samples
+
+  Sadness     :
+    LLM C1   F1=0.378  95%CI=[0.287, 0.462]  support=102 positive samples
+
+  Anger       :
+    LLM C1   F1=0.523  95%CI=[0.432, 0.604]  support=104 positive samples
+
+  Fear        :
+    LLM C1   F1=0.136  95%CI=[0.000, 0.281]  support=22 positive samples
+
+  Disgust     :
+    LLM C1   F1=0.634  95%CI=[0.551, 0.708]  support=110 positive samples
+
+  Surprise    :
+    LLM C1   F1=0.254  95%CI=[0.109, 0.394]  support=47 positive samples
+
+  --- Bootstrap 95% CI for F1 difference (LLM C1 minus LogReg baseline) ---
+  Note: LogReg F1 from hardcoded per-emotion values (no per-sample predictions available)
+    Happiness   : diff=-0.030  95%CI=[-0.098, +0.034]  CI includes 0
+    Sadness     : diff=+0.006  95%CI=[-0.083, +0.093]  CI includes 0
+    Anger       : diff=+0.272  95%CI=[+0.183, +0.354]  CI excludes 0
+    Fear        : diff=+0.063  95%CI=[-0.070, +0.209]  CI includes 0
+    Disgust     : diff=+0.143  95%CI=[+0.062, +0.218]  CI excludes 0
+    Surprise    : diff=+0.041  95%CI=[-0.101, +0.184]  CI includes 0
