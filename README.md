@@ -1,37 +1,37 @@
 # PaperAdvanRobot
 
-**Estudo Comparativo: LLM Multimodal vs. Métodos Tradicionais para Reconhecimento de Emoção**
+**LLM Multimodal vs. Traditional Methods for Emotion Recognition — Experimental Pipeline**
 
-> Paper para a disciplina de *Advanced Robotics* — Pipeline reprodutível para comparar
-> um baseline baseado em **regras de blendshapes faciais** com um **LLM multimodal
-> (Gemma 4 26B)** em duas bases de dados de computação afetiva.
+> Reproducible pipeline comparing a **rule-based blendshape engine** and a
+> **logistic regression on FACET features** against a **multimodal LLM
+> (Gemma 4 26B)** on two affective computing benchmarks.
 
 ---
 
-## Visão Geral
+## Overview
 
 ```mermaid
 flowchart LR
-    subgraph DADOS["Bases de Dados"]
-        OMG["OMG-Empathy\n80 vídeos · valência contínua"]
-        MOSEI["CMU-MOSEI\n23k segmentos · 6 emoções Ekman"]
+    subgraph DATASETS["Datasets"]
+        OMG["OMG-Empathy\n80 videos · continuous valence"]
+        MOSEI["CMU-MOSEI\n23k segments · 6 Ekman emotions"]
     end
 
     subgraph LLM_SYS["LLM (Gemma 4 26B-A4B)"]
-        C1["C1 Texto"]
-        C2["C2 Features faciais"]
-        C3["C3 Visão nativa"]
+        C1["C1 Text"]
+        C2["C2 Structured features"]
+        C3["C3 Native vision"]
     end
 
-    subgraph BASELINE["Baselines Tradicionais"]
-        BL1["Regras blendshapes → V-A"]
-        BL2["LogReg sobre FACET"]
+    subgraph BASELINE["Traditional Baselines"]
+        BL1["Rule-based\nblendshapes → V-A"]
+        BL2["LogReg on FACET"]
     end
 
-    subgraph EVAL["Avaliação"]
-        CCC["CCC por vídeo"]
-        F1["F1 multi-rótulo"]
-        STAT["Wilcoxon · Bootstrap CI"]
+    subgraph EVAL["Evaluation"]
+        CCC["CCC per video"]
+        F1["Multi-label F1"]
+        STAT["Wilcoxon · Friedman\nKruskal-Wallis\nBootstrap CI"]
     end
 
     OMG --> C2 & C3
@@ -44,170 +44,268 @@ flowchart LR
 
 ---
 
-## Principais Resultados
+## Key Results
 
-### OMG-Empathy — Valência contínua (CCC)
+### OMG-Empathy — Continuous Valence (CCC)
 
-| Sistema | CCC médio | IC 95% |
+| System | Mean CCC | 95% Bootstrap CI |
 |---|---|---|
-| **LLM C3 (visão) — zero-shot** | **+0,158** | [+0,085; +0,230] |
-| Baseline (regras) | +0,148 | [+0,044; +0,259] |
-| LLM C2 (blendshapes) — few-shot k=3 | +0,127 | [+0,046; +0,213] |
-| LLM C2 (blendshapes) — zero-shot | +0,090 | [+0,007; +0,176] |
+| **LLM C3 (vision) — zero-shot** | **+0.158** | [+0.085, +0.230] |
+| Baseline (rule-based) | +0.148 | [+0.044, +0.259] |
+| LLM C2 (blendshapes) — few-shot k=3 | +0.127 | [+0.046, +0.213] |
+| LLM C2 (blendshapes) — zero-shot | +0.090 | [+0.007, +0.176] |
 
-![CCC por condição — OMG-Empathy](results/figures/omg_ccc_conditions.png)
+**Friedman test**: χ² = 10.04, p = 0.018 (significant omnibus difference).
 
-### CMU-MOSEI — Emoção multi-rótulo (F1)
+![CCC per condition — OMG-Empathy](results/figures/omg_ccc_conditions.png)
 
-| Sistema | F1 micro | **F1 macro** | F1 ponderado |
+### CMU-MOSEI — Multi-Label Emotion (F1)
+
+| System | F1 micro | **F1 macro** | F1 weighted |
 |---|---|---|---|
-| Baseline (LogReg FACET) | 0,376 | 0,333 | 0,423 |
-| **LLM C1 texto — few-shot** | **0,499** | **0,416** | 0,498 |
-| LLM C2 FACET — few-shot | 0,289 | 0,130 | 0,213 |
+| Baseline (LogReg on FACET) | 0.376 | 0.333 | 0.423 |
+| **LLM C1 (text) — few-shot k=5** | **0.499** | **0.416** | 0.498 |
+| LLM C2 (FACET) — few-shot k=5 | 0.289 | 0.130 | 0.213 |
 
-![F1 por emoção — CMU-MOSEI](results/figures/mosei_f1_per_emotion.png)
+**Kruskal-Wallis**: H = 29.18, p < 10⁻⁵ (significant across 4 systems).
 
-### Conclusão: Vantagem Dependente de Modalidade
+![Per-emotion F1 — CMU-MOSEI](results/figures/mosei_f1_per_emotion.png)
+
+### Modality-Dependent Advantage
 
 ```mermaid
 graph LR
-    TXT["Texto"] -->|"macro-F1 +25%"| WIN["LLM vence"]
-    IMG["Imagem"] -->|"CCC p=0.42"| TIE["Empate"]
-    NUM["Vetores numéricos"] -->|"CCC p=0.013"| LOSE["Tradicional vence"]
+    TXT["Text"] -->|"macro-F1 +25%"| WIN["LLM wins"]
+    IMG["Image"] -->|"CCC p=0.42"| TIE["Tie"]
+    NUM["Numerical vectors"] -->|"CCC p=0.013"| LOSE["Traditional wins"]
 
     style WIN fill:#4A90D9,color:#fff
     style TIE fill:#F5A623,color:#fff
     style LOSE fill:#E07B54,color:#fff
 ```
 
-> **Mensagem central:** a superioridade do LLM não é universal — é dependente
-> da modalidade de entrada. Texto → LLM. Imagem → empate. Features numéricas → tradicional.
+> **Central finding:** the LLM's advantage is not universal — it depends on the
+> input representation. Text → LLM. Image → tie. Serialized numerical features → traditional.
 
 ---
 
-## Stack Técnico
+## Tech Stack
 
-| Componente | Tecnologia |
+| Component | Technology |
 |---|---|
-| Modelo LLM | Gemma 4 26B-A4B-it (MoE, 3.8B ativos/token) |
-| Quantização | AWQ 4-bit |
-| Serving | vLLM (API OpenAI-compatível) |
+| LLM Model | Gemma 4 26B-A4B-it (MoE, 3.8B active/token) |
+| Quantization | AWQ 4-bit (weight-only) |
+| Serving | vLLM (OpenAI-compatible API, PagedAttention) |
 | GPU | NVIDIA L4 24 GB (GCP Spot VM) |
-| Orquestração | LangGraph + LangChain |
-| Features faciais | MediaPipe Face Landmarker (52 blendshapes) |
-| Features MOSEI | FACET 35-dim (pré-extraída) |
-| Avaliação | CCC (Lin 1989), F1 multi-rótulo, Wilcoxon, Bootstrap CI |
+| Orchestration | LangGraph + LangChain |
+| Facial features (OMG) | MediaPipe Face Landmarker (52 blendshapes) |
+| Visual features (MOSEI) | FACET 35-dim (pre-extracted) |
+| Evaluation | CCC, multi-label F1, Wilcoxon, Friedman, Kruskal-Wallis, Bootstrap CI, Cohen's d |
 
 ---
 
-## Instalação
+## Prerequisites
+
+- **Python 3.11** (MediaPipe requires ≤ 3.12)
+- **GPU**: NVIDIA L4 24 GB (or equivalent with ≥ 24 GB VRAM) for vLLM serving
+- **vLLM** running with the Gemma 4 model (see [Model Setup](#model-setup))
+
+## Installation
 
 ```bash
-python3.11 -m venv .venv && source .venv/bin/activate
+git clone https://github.com/THIAGONOMA/PaperAdvanRobot.git
+cd PaperAdvanRobot
+
+python3.11 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Configuração do Modelo
+## Data Setup
 
-O LLM é acessado via API compatível com OpenAI. Ajuste o endpoint em
-`config/config.yaml` ou via variáveis de ambiente:
+### OMG-Empathy
+
+Download the OMG-Empathy dataset and extract to `data/`:
+
+```bash
+# Download (password-protected zip — see paper for details)
+unzip -P 'M2ComZJChbPc' OMG_Empathy2019_full_fY4m3eyn.zip -d data/
+```
+
+Expected structure:
+```
+data/OMG_Empathy2019_full_fY4m3eyn/
+├── TestVideos/         # MP4 videos (split-screen)
+├── Annotations/        # CSV with continuous valence per frame
+└── ...
+```
+
+### CMU-MOSEI
+
+Download from [Kaggle](https://www.kaggle.com/datasets/samarwarsi/cmu-mosei/data):
+
+```bash
+pip install kaggle
+kaggle datasets download -d samarwarsi/cmu-mosei -f CMU_MOSEI_TimestampedWords.csd -p data/
+kaggle datasets download -d samarwarsi/cmu-mosei -f CMU_MOSEI_VisualFacet42.csd -p data/
+kaggle datasets download -d samarwarsi/cmu-mosei -f CMU_MOSEI_Labels.csd -p data/
+```
+
+Expected structure:
+```
+data/
+├── CMU_MOSEI_TimestampedWords.csd   # Transcripts (HDF5)
+├── CMU_MOSEI_VisualFacet42.csd      # FACET features (HDF5)
+└── CMU_MOSEI_Labels.csd             # Emotion labels (HDF5)
+```
+
+## Model Setup
+
+Start vLLM with the quantized Gemma 4 model:
+
+```bash
+vllm serve cyankiwi/gemma-4-26B-A4B-it-AWQ-4bit \
+    --port 8000 \
+    --max-model-len 8192 \
+    --gpu-memory-utilization 0.95
+```
+
+Configure the endpoint in `config/config.yaml`:
+
+```yaml
+llm:
+  base_url: "http://localhost:8000/v1"
+  model: "cyankiwi/gemma-4-26B-A4B-it-AWQ-4bit"
+```
+
+Or via environment variables:
 
 ```bash
 export LLM_BASE_URL="http://localhost:8000/v1"
 export LLM_MODEL="cyankiwi/gemma-4-26B-A4B-it-AWQ-4bit"
 ```
 
-## Uso
+---
+
+## Running Experiments
+
+All scripts use `PYTHONPATH=.` to resolve the `src/` package.
+
+### OMG-Empathy Evaluation
 
 ```bash
-# OMG — visão nativa (C3), zero-shot
+# C3 — Native vision (3 JPEG keyframes per 4s window), zero-shot
 PYTHONPATH=. python scripts/eval_omg_timeseries.py --condition C3
 
-# OMG — blendshapes (C2), few-shot k=3
+# C2 — Blendshape features, few-shot k=3
 PYTHONPATH=. python scripts/eval_omg_timeseries.py --condition C2 --k-shots 3
 
-# MOSEI — texto (C1), few-shot k=5
-PYTHONPATH=. python scripts/eval_mosei_multilabel.py
-
-# Gerar gráficos e testes estatísticos
-PYTHONPATH=. python scripts/generate_summary_assets.py
+# C2 — Blendshape features, zero-shot
+PYTHONPATH=. python scripts/eval_omg_timeseries.py --condition C2
 ```
+
+### CMU-MOSEI Evaluation
+
+```bash
+# Runs all conditions (C1 text, C2 FACET, zero-shot and few-shot)
+PYTHONPATH=. python scripts/eval_mosei_multilabel.py
+```
+
+### Generate Figures and Statistical Tests
+
+```bash
+# Generates all plots + stats_report.txt
+PYTHONPATH=. python scripts/generate_summary_assets.py
+
+# Generates cost analysis + latency boxplot
+PYTHONPATH=. python scripts/compute_cost_report.py
+```
+
+Output:
+- `results/figures/*.png` — Publication-quality figures (DPI 300, serif font)
+- `results/stats_report.txt` — Full statistical report (14 tests)
+- `results/cost_report.txt` — Computational cost breakdown
 
 ---
 
-## Estrutura do Repositório
+## Experimental Conditions
+
+| Condition | Input to LLM | Dataset | Description |
+|---|---|---|---|
+| **C1** | Verbatim transcript | MOSEI | Speaker's words as text |
+| **C2** | Serialized facial features | OMG + MOSEI | Blendshape stats (OMG) or FACET coefficients (MOSEI) |
+| **C3** | JPEG keyframes | OMG | 3 frames per 4s window via vision encoder |
+
+> MOSEI does not provide raw video — only pre-extracted features.
+> Hence C3 is restricted to OMG and MOSEI C2 uses FACET as proxy.
+
+---
+
+## Statistical Tests
+
+The pipeline implements 14 statistical tests/metrics:
+
+| Test | Purpose | Dataset |
+|---|---|---|
+| Wilcoxon signed-rank | Pairwise paired comparisons | OMG (5 pairs), MOSEI (C1 vs C2) |
+| Friedman test | Non-parametric repeated-measures ANOVA | OMG (4 conditions × 15 videos) |
+| Kruskal-Wallis | Non-parametric one-way ANOVA | MOSEI (4 systems), Latency (4 conditions) |
+| Dunn post-hoc | Pairwise comparisons after omnibus | MOSEI, Latency |
+| Holm-Bonferroni | Multiple comparisons correction | OMG post-hoc |
+| Bootstrap 95% CI | Confidence intervals (10,000 resamples) | OMG CCC, MOSEI F1, Per-emotion F1 |
+| Cohen's d | Effect size | OMG, MOSEI |
+| McNemar's test | Exact label-set match | MOSEI (C1 vs C2) |
+
+---
+
+## Repository Structure
 
 ```
 PaperAdvanRobot/
 ├── config/
-│   └── config.yaml              # Configuração centralizada
+│   └── config.yaml                  # Centralized configuration
 ├── src/
-│   ├── config.py                # Loader de configuração (Pydantic)
+│   ├── config.py                    # Config loader (Pydantic)
 │   ├── data/
-│   │   ├── omg_loader.py        # Loader OMG-Empathy (vídeo + valência)
-│   │   ├── mosei_loader.py      # Loader CMU-MOSEI (HDF5 .csd)
-│   │   └── types.py             # Sample, GroundTruth
+│   │   ├── omg_loader.py            # OMG-Empathy loader (video + valence)
+│   │   ├── mosei_loader.py          # CMU-MOSEI loader (HDF5 .csd)
+│   │   └── types.py                 # Sample, GroundTruth data types
 │   ├── features/
-│   │   ├── blendshapes.py       # MediaPipe Face Landmarker (52 blendshapes)
-│   │   ├── extract.py           # Extração multi-frame
-│   │   └── serialize.py         # Serialização para prompts
+│   │   ├── blendshapes.py           # MediaPipe Face Landmarker (52 blendshapes)
+│   │   ├── extract.py               # Multi-frame feature extraction
+│   │   └── serialize.py             # Feature serialization for prompts
 │   ├── baseline/
-│   │   └── rule_engine.py       # Regras blendshapes → valência-arousal
+│   │   └── rule_engine.py           # Rule-based blendshapes → valence-arousal
 │   ├── llm/
-│   │   ├── schema.py            # Pydantic: ValencePrediction, EmotionPrediction
-│   │   ├── prompts.py           # System/user prompts calibrados
-│   │   ├── graph.py             # LangGraph: state machine de inferência
-│   │   ├── runner.py            # Executor de inferência em lote
-│   │   └── fewshot.py           # Geração de exemplos few-shot
+│   │   ├── schema.py                # Pydantic: ValencePrediction, EmotionPrediction
+│   │   ├── prompts.py               # Calibrated system/user prompts
+│   │   ├── graph.py                 # LangGraph: inference state machine
+│   │   ├── runner.py                # Batch inference executor
+│   │   └── fewshot.py               # Few-shot example generation
 │   └── eval/
-│       ├── metrics.py           # CCC, F1, CCC por vídeo
-│       └── stats.py             # McNemar, bootstrap CI
+│       ├── metrics.py               # CCC, F1, CCC per video
+│       └── stats.py                 # McNemar, bootstrap CI
 ├── scripts/
-│   ├── eval_omg_timeseries.py   # Avaliação OMG (protocolo oficial CCC)
-│   ├── eval_mosei_multilabel.py # Avaliação MOSEI (F1 multi-rótulo)
-│   └── generate_summary_assets.py # Gráficos + testes estatísticos
-├── paper/
-│   ├── results.md               # Seção de resultados (artigo acadêmico)
-│   ├── biblio.md                # Bibliografia (16 referências)
-│   ├── datasource.md            # Pipelines de dados e protocolos
-│   └── figures/                 # Gráficos do paper (PNG)
+│   ├── eval_omg_timeseries.py       # OMG evaluation (official CCC protocol)
+│   ├── eval_mosei_multilabel.py     # MOSEI evaluation (multi-label F1)
+│   ├── generate_summary_assets.py   # Figures + statistical tests
+│   └── compute_cost_report.py       # Computational cost analysis
 ├── results/
-│   ├── summary.md               # Resultados consolidados
-│   ├── figures/                 # Gráficos gerados
-│   ├── stats_report.txt         # Relatório de testes estatísticos
-│   └── *.log, *.parquet         # Logs e dados brutos de avaliação
-└── docs/
-    ├── arch.md                  # Arquitetura C4 + UML (Mermaid)
-    └── techspec.md              # Especificação técnica completa
+│   ├── figures/                     # Generated plots (PNG)
+│   ├── stats_report.txt             # Full statistical report
+│   ├── cost_report.txt              # Cost and latency analysis
+│   └── *.parquet                    # Raw evaluation data
+├── docs/
+│   ├── arch.md                      # System architecture (C4 + UML, Mermaid)
+│   └── techspec.md                  # Full technical specification
+├── requirements.txt
+├── .gitignore
+└── README.md
 ```
 
-## Condições Experimentais
-
-| Condição | Entrada | Datasets | Descrição |
-|---|---|---|---|
-| **C1** | Transcrição de texto | MOSEI | O LLM recebe o que a pessoa disse |
-| **C2** | Features faciais serializadas | OMG + MOSEI | Blendshapes (OMG) ou FACET (MOSEI) como texto |
-| **C3** | Frames JPEG (visão nativa) | OMG | 3 keyframes por janela de 4 s |
-
-> O MOSEI não disponibiliza vídeo bruto — apenas features pré-extraídas.
-> Por isso C3 fica restrito ao OMG e C2 no MOSEI usa FACET como proxy.
-
 ---
 
-## Documentação
-
-| Documento | Descrição |
-|---|---|
-| [`paper/results.md`](paper/results.md) | Seção de resultados do paper (formato artigo, com citações) |
-| [`paper/biblio.md`](paper/biblio.md) | Bibliografia completa (16 referências com BibTeX) |
-| [`paper/datasource.md`](paper/datasource.md) | Pipelines de dados, protocolos e reprodutibilidade |
-| [`results/summary.md`](results/summary.md) | Resultados consolidados com diagramas Mermaid |
-| [`docs/arch.md`](docs/arch.md) | Arquitetura do sistema (C4 + UML) |
-| [`docs/techspec.md`](docs/techspec.md) | Especificação técnica completa |
-
----
-
-## Referências Principais
+## Key References
 
 - Barros et al. (2019) — [OMG-Empathy Dataset](https://arxiv.org/abs/1908.11706)
 - Zadeh et al. (2018) — [CMU-MOSEI](https://aclanthology.org/P18-1208/)
@@ -217,11 +315,13 @@ PaperAdvanRobot/
 - Surdulescu et al. (2023) — [MediaPipe Blendshapes GHUM](https://arxiv.org/abs/2309.05782)
 - Lin (1989) — [Concordance Correlation Coefficient](https://doi.org/10.2307/2532051)
 - Ekman (1992) — [Basic Emotions](https://doi.org/10.1080/02699939208411068)
+- Friedman (1937) — [Rank-based ANOVA alternative](https://doi.org/10.1080/01621459.1937.10503522)
+- Kruskal & Wallis (1952) — [One-criterion variance analysis by ranks](https://doi.org/10.1080/01621459.1952.10483441)
 
 ---
 
-## Licença
+## License
 
-Este repositório contém código e documentação do estudo. As bases de dados
-(OMG-Empathy e CMU-MOSEI) são propriedade de seus respectivos autores e devem
-ser obtidas separadamente.
+This repository contains code and evaluation results from the study. The datasets
+(OMG-Empathy and CMU-MOSEI) are property of their respective authors and must
+be obtained separately following their original licenses.

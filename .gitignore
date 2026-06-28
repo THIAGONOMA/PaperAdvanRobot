@@ -11,3 +11,20 @@ data/
 *.zip
 agent-tools/
 models/*.task
+
+# Paper manuscripts (private, shared via Overleaf)
+paper/
+paperMo/
+
+# LaTeX auxiliary files
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# IDE settings
+.vscode/
